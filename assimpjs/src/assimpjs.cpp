@@ -25,7 +25,9 @@ public:
 	size_t Read (void* pvBuffer, size_t pSize, size_t pCount)
 	{
 		// TODO
-		return 0;
+		size_t memSize = pSize * pCount;
+		memcpy_s (pvBuffer, memSize, &file.content[0], memSize);
+		return memSize;
 	}
 
 	size_t Write (const void* pvBuffer, size_t pSize, size_t pCount)
@@ -101,7 +103,7 @@ int ImportFile (const std::vector<File>& files)
 {
 	Assimp::Importer importer;
 	importer.SetIOHandler (new JSIOSystem (files));
-	const aiScene* scene = importer.ReadFile ("C:\\Users\\kovacsv\\GitRepos\\assimpjs\\em_build\\Debug\\cube_four_instances.3ds",
+	const aiScene* scene = importer.ReadFile (files[0].name,
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
