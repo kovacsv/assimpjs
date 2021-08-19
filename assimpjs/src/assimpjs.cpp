@@ -6,6 +6,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <stdexcept>
+
 static std::string GetFileName (const std::string& path)
 {
 	size_t lastSeparator = path.find_last_of ('/');
@@ -51,51 +53,62 @@ class JSIOStream: public Assimp::IOStream
 {
 public:
 	JSIOStream (const File& file) :
-		file (file)
+		file (file),
+		position (0)
 	{
 	}
 
-	~JSIOStream ()
+	virtual ~JSIOStream ()
 	{
 	}
 	
-	size_t Read (void* pvBuffer, size_t pSize, size_t pCount)
+	virtual size_t Read (void* pvBuffer, size_t pSize, size_t pCount) override
 	{
-		// TODO
 		size_t memSize = pSize * pCount;
 		memcpy_s (pvBuffer, memSize, &file.content[0], memSize);
+		position += memSize;
 		return memSize;
 	}
 
-	size_t Write (const void* pvBuffer, size_t pSize, size_t pCount)
+	virtual size_t Write (const void* pvBuffer, size_t pSize, size_t pCount) override
 	{
-		// TODO: exception
-		return 0;
+		throw std::logic_error ("not implemented");
 	}
 	
-	aiReturn Seek (size_t pOffset, aiOrigin pOrigin)
+	virtual aiReturn Seek (size_t pOffset, aiOrigin pOrigin) override
 	{
-		// TODO: exception
+		switch (pOrigin) {
+			case aiOrigin_SET:
+				position = pOffset;
+				break;
+			case aiOrigin_CUR:
+				position += pOffset;
+				break;
+			case aiOrigin_END:
+				throw std::logic_error ("not implemented");
+				break;
+		}
 		return aiReturn::aiReturn_SUCCESS;
 	}
 
-	size_t Tell () const
+	virtual size_t Tell () const override
 	{
-		return 0;
+		return position;
 	}
 
-	size_t FileSize () const
+	virtual size_t FileSize () const override
 	{
 		return file.content.size ();
 	}
 
-	void Flush ()
+	virtual void Flush () override
 	{
 
 	}
 
 private:
-	const File& file;
+	const File&		file;
+	size_t			position;
 };
 
 class JSIOSystem : public Assimp::IOSystem
@@ -106,24 +119,23 @@ public:
 	{
 	}
 
-	~JSIOSystem ()
+	virtual ~JSIOSystem ()
 	{
 	
 	}
 
-	bool Exists (const char* pFile) const
+	virtual bool Exists (const char* pFile) const override
 	{
-		return true;
+		return fileList.GetFile (pFile) != nullptr;
 	}
 
-	char getOsSeparator () const
+	virtual char getOsSeparator () const override
 	{
 		return '/';
 	}
 
-	Assimp::IOStream* Open (const char* pFile, const char* pMode)
+	virtual Assimp::IOStream* Open (const char* pFile, const char* pMode) override
 	{
-		// TODO
 		const File* foundFile = fileList.GetFile (pFile);
 		if (foundFile == nullptr) {
 			return nullptr;
@@ -131,7 +143,7 @@ public:
 		return new JSIOStream (*foundFile);
 	}
 
-	void Close (Assimp::IOStream* pFile)
+	virtual void Close (Assimp::IOStream* pFile) override
 	{
 		delete pFile;
 	}
