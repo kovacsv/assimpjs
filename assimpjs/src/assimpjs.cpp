@@ -1,9 +1,46 @@
 #include "assimpjs.hpp"
+
 #include <assimp/Importer.hpp>
 #include <assimp/IOStream.hpp>
 #include <assimp/IOSystem.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+static std::string GetFileName (const std::string& path)
+{
+	size_t lastSeparator = path.find_last_of ('/');
+	if (lastSeparator == std::wstring::npos) {
+		return path;
+	}
+	return path.substr (lastSeparator, path.length () - lastSeparator);
+}
+
+FileList::FileList () :
+	files ()
+{
+}
+
+void FileList::AddFile (const std::string& path, std::vector<char> content)
+{
+	files.push_back ({ path, content });
+}
+
+const File* FileList::GetFile (size_t index) const
+{
+	return &files[index];
+}
+
+const File* FileList::GetFile (const std::string& path) const
+{
+	std::string name = GetFileName (path);
+	for (const File& file : files) {
+		std::string fileName = GetFileName (file.path);
+		if (file.path == path) {
+			return &file;
+		}
+	}
+	return nullptr;
+}
 
 int MeaningOfLife ()
 {
@@ -64,8 +101,8 @@ private:
 class JSIOSystem : public Assimp::IOSystem
 {
 public:
-	JSIOSystem (const std::vector<File>& files) :
-		files (files)
+	JSIOSystem (const FileList& fileList) :
+		fileList (fileList)
 	{
 	}
 
@@ -87,7 +124,11 @@ public:
 	Assimp::IOStream* Open (const char* pFile, const char* pMode)
 	{
 		// TODO
-		return new JSIOStream (files[0]);
+		const File* foundFile = fileList.GetFile (pFile);
+		if (foundFile == nullptr) {
+			return nullptr;
+		}
+		return new JSIOStream (*foundFile);
 	}
 
 	void Close (Assimp::IOStream* pFile)
@@ -96,14 +137,14 @@ public:
 	}
 
 private:
-	const std::vector<File>& files;
+	const FileList& fileList;
 };
 
-int ImportFile (const std::vector<File>& files)
+int ImportFile (const FileList& fileList)
 {
 	Assimp::Importer importer;
-	importer.SetIOHandler (new JSIOSystem (files));
-	const aiScene* scene = importer.ReadFile (files[0].name,
+	importer.SetIOHandler (new JSIOSystem (fileList));
+	const aiScene* scene = importer.ReadFile (fileList.GetFile (0)->path,
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |

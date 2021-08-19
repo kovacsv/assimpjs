@@ -10,12 +10,11 @@ int main ()
 		return 1;
 	}
 	size_t fileSize = stream->FileSize ();
-	File file {
-		"cube_four_instances.3ds",
-		std::vector<char> (fileSize)
-	};
+	std::vector<char> content (fileSize);
+	stream->Read (&content[0], 1, fileSize);
 
-	stream->Read (&file.content[0], 1, fileSize);
-	int mol = ImportFile ({ file });
+	FileList fileList;
+	fileList.AddFile ("cube_four_instances.3ds", content);
+	int mol = ImportFile (fileList);
 	return mol;
 }

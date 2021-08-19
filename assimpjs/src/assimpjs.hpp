@@ -4,14 +4,28 @@
 #include <vector>
 #include <string>
 
-struct File
+class File
 {
-	std::string			name;
+public:
+	std::string			path;
 	std::vector<char>	content;
+};
+
+class FileList
+{
+public:
+	FileList ();
+
+	void			AddFile (const std::string& path, std::vector<char> content);
+	const File*		GetFile (size_t index) const;
+	const File*		GetFile (const std::string& path) const;
+
+private:
+	std::vector<File>	files;
 };
 
 int MeaningOfLife ();
 
-int ImportFile (const std::vector<File>& files);
+int ImportFile (const FileList& fileList);
 
 #endif
