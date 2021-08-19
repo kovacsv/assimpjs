@@ -1,0 +1,54 @@
+cmake_minimum_required (VERSION 3.6)
+
+set_property (GLOBAL PROPERTY USE_FOLDERS ON)
+
+set (CMAKE_SUPPRESS_REGENERATION 1)
+set (CMAKE_CONFIGURATION_TYPES Debug;Release;RelWithDebInfo)
+
+add_definitions (-DUNICODE -D_UNICODE)
+
+project (AssimpJS)
+
+function (SetCompilerOptions module)
+	target_compile_options (${module} PUBLIC "$<$<CONFIG:Debug>:-DDEBUG>")
+	if (WIN32)
+		set (AdditionalWarnings /w44061 /w44062 /w44265 /w44266 /w44355 /w44596 /w44800)
+		target_compile_options (${module} PUBLIC /W4 /WX ${AdditionalWarnings} ${VSE_CUSTOM_BUILD_OPTIONS})
+	else ()
+		target_compile_options (${module} PUBLIC -std=c++11 -Wall -Wextra -Werror ${VSE_CUSTOM_BUILD_OPTIONS})
+	endif ()
+endfunction ()
+
+# Assimp
+
+add_subdirectory (assimp)
+
+# AssimpJS
+
+if (${EMSCRIPTEN})
+	set (AssimpJSSourcesFolder assimpjs)
+	file (GLOB
+		AssimpJSSourceFiles
+		${AssimpJSSourcesFolder}/*.hpp
+		${AssimpJSSourcesFolder}/*.cpp
+	)
+	source_group ("Sources" FILES ${AssimpJSSourceFiles})
+
+	add_executable (
+		AssimpJS
+		${AssimpJSSourceFiles}
+	)
+	set_target_properties(AssimpJS PROPERTIES OUTPUT_NAME assimpjs)
+	set_target_properties (AssimpJS PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+	
+	target_compile_options (AssimpJS PUBLIC "$<$<CONFIG:Debug>:-gsource-map>")
+	SetCompilerOptions (AssimpJS)
+
+	target_link_options (AssimpJS PUBLIC -sMODULARIZE=1)
+	target_link_options (AssimpJS PUBLIC -sEXPORT_NAME='assimpjs')
+	target_link_options (AssimpJS PUBLIC -sALLOW_MEMORY_GROWTH=1 --no-heap-copy)
+	target_link_options (AssimpJS PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)
+	target_link_options (AssimpJS PUBLIC --bind)
+	
+	target_link_libraries (AssimpJS assimp)
+endif ()
