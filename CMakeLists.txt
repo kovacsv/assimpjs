@@ -32,13 +32,9 @@ file (GLOB
 	${AssimpJSSourcesFolder}/*.cpp
 )
 source_group ("Sources" FILES ${AssimpJSSourceFiles})
-add_executable (AssimpJS ${AssimpJSSourceFiles})
-SetCompilerOptions (AssimpJS)
-target_link_libraries (AssimpJS assimp)
-set_target_properties(AssimpJS PROPERTIES OUTPUT_NAME assimpjs)
-set_target_properties (AssimpJS PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 
 if (${EMSCRIPTEN})
+	add_executable (AssimpJS ${AssimpJSSourceFiles})
 	target_compile_options (AssimpJS PUBLIC "$<$<CONFIG:Debug>:-gsource-map>")
 
 	target_link_options (AssimpJS PUBLIC -sMODULARIZE=1)
@@ -51,4 +47,29 @@ if (${EMSCRIPTEN})
 	add_custom_command (TARGET AssimpJS POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory ${AssimpJSTestFolderAbsolute} $<TARGET_FILE_DIR:AssimpJS>
 	)
+else ()
+	add_library (AssimpJS ${AssimpJSSourceFiles})
+endif ()
+
+SetCompilerOptions (AssimpJS)
+target_link_libraries (AssimpJS assimp)
+set_target_properties(AssimpJS PROPERTIES OUTPUT_NAME assimpjs)
+set_target_properties (AssimpJS PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+
+# AssimpJSTest
+
+if (${EMSCRIPTEN})
+else ()
+	set (AssimpJSTestSourcesFolder assimpjs/test)
+	file (GLOB
+		AssimpJSTestSourceFiles
+		${AssimpJSTestSourcesFolder}/*.hpp
+		${AssimpJSTestSourcesFolder}/*.cpp
+	)
+	source_group ("Sources" FILES ${AssimpJSTestSourceFiles})
+	add_executable (AssimpJSTest ${AssimpJSTestSourceFiles})
+	SetCompilerOptions (AssimpJSTest)
+	target_include_directories (AssimpJSTest PUBLIC ${AssimpJSSourcesFolder} ${TinyCSGEmscriptenSourcesFolder})
+	target_link_libraries (AssimpJSTest AssimpJS)
+	set_target_properties (AssimpJSTest PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 endif ()
