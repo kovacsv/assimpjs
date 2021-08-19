@@ -26,7 +26,7 @@ add_subdirectory (assimp)
 # AssimpJS
 
 if (${EMSCRIPTEN})
-	set (AssimpJSSourcesFolder assimpjs)
+	set (AssimpJSSourcesFolder assimpjs/src)
 	file (GLOB
 		AssimpJSSourceFiles
 		${AssimpJSSourcesFolder}/*.hpp
@@ -51,4 +51,9 @@ if (${EMSCRIPTEN})
 	target_link_options (AssimpJS PUBLIC --bind)
 	
 	target_link_libraries (AssimpJS assimp)
+
+	get_filename_component (AssimpJSTestFolderAbsolute "${CMAKE_CURRENT_LIST_DIR}/assimpjs/test" ABSOLUTE)
+	add_custom_command (TARGET AssimpJS POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${AssimpJSTestFolderAbsolute} $<TARGET_FILE_DIR:AssimpJS>
+	)
 endif ()
