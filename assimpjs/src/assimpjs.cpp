@@ -65,7 +65,7 @@ public:
 	virtual size_t Read (void* pvBuffer, size_t pSize, size_t pCount) override
 	{
 		size_t memSize = pSize * pCount;
-		memcpy_s (pvBuffer, memSize, &file.content[0], memSize);
+		memcpy (pvBuffer, &file.content[0], memSize);
 		position += memSize;
 		return memSize;
 	}
