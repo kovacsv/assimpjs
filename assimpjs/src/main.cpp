@@ -1,4 +1,3 @@
-#include <emscripten/bind.h>
 #include <assimp/Importer.hpp>
 
 int MeaningOfLife ()
@@ -7,8 +6,19 @@ int MeaningOfLife ()
 	return 42;
 }
 
+#ifdef EMSCRIPTEN
+
+#include <emscripten/bind.h>
+
 EMSCRIPTEN_BINDINGS (assimpjs) {
 
 emscripten::function<int> ("MeaningOfLife", &MeaningOfLife);
 
+}
+
+#endif
+
+int main ()
+{
+	return 0;
 }

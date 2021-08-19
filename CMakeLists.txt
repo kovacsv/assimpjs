@@ -25,24 +25,21 @@ add_subdirectory (assimp)
 
 # AssimpJS
 
-if (${EMSCRIPTEN})
-	set (AssimpJSSourcesFolder assimpjs/src)
-	file (GLOB
-		AssimpJSSourceFiles
-		${AssimpJSSourcesFolder}/*.hpp
-		${AssimpJSSourcesFolder}/*.cpp
-	)
-	source_group ("Sources" FILES ${AssimpJSSourceFiles})
+set (AssimpJSSourcesFolder assimpjs/src)
+file (GLOB
+	AssimpJSSourceFiles
+	${AssimpJSSourcesFolder}/*.hpp
+	${AssimpJSSourcesFolder}/*.cpp
+)
+source_group ("Sources" FILES ${AssimpJSSourceFiles})
+add_executable (AssimpJS ${AssimpJSSourceFiles})
+SetCompilerOptions (AssimpJS)
+target_link_libraries (AssimpJS assimp)
+set_target_properties(AssimpJS PROPERTIES OUTPUT_NAME assimpjs)
+set_target_properties (AssimpJS PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 
-	add_executable (
-		AssimpJS
-		${AssimpJSSourceFiles}
-	)
-	set_target_properties(AssimpJS PROPERTIES OUTPUT_NAME assimpjs)
-	set_target_properties (AssimpJS PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
-	
+if (${EMSCRIPTEN})
 	target_compile_options (AssimpJS PUBLIC "$<$<CONFIG:Debug>:-gsource-map>")
-	SetCompilerOptions (AssimpJS)
 
 	target_link_options (AssimpJS PUBLIC -sMODULARIZE=1)
 	target_link_options (AssimpJS PUBLIC -sEXPORT_NAME='assimpjs')
@@ -50,8 +47,6 @@ if (${EMSCRIPTEN})
 	target_link_options (AssimpJS PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)
 	target_link_options (AssimpJS PUBLIC --bind)
 	
-	target_link_libraries (AssimpJS assimp)
-
 	get_filename_component (AssimpJSTestFolderAbsolute "${CMAKE_CURRENT_LIST_DIR}/assimpjs/test" ABSOLUTE)
 	add_custom_command (TARGET AssimpJS POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory ${AssimpJSTestFolderAbsolute} $<TARGET_FILE_DIR:AssimpJS>
