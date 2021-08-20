@@ -33,7 +33,7 @@ assimpjs ().then (function (ajs) {
     ];
     // fetch all the files
     Promise.all (files.map ((file) => fetch (file))).then ((responses) => {
-        return Promise.all (responses.map ((res) => res.arrayBuffer()));
+        return Promise.all (responses.map ((res) => res.arrayBuffer ()));
     }).then ((arrayBuffers) => {
         // create a file list object
         let fileList = new ajs.FileList ();
