@@ -3,18 +3,18 @@
 
 #include "assimpjs.hpp"
 
-static void AddFileToFileList (const std::string& folderPath, const std::string& fileName, FileList& fileList)
+static File GetFile (const std::string& folderPath, const std::string& fileName)
 {
 	std::string filePath = folderPath + "\\testfiles\\" + fileName;
 	Assimp::DefaultIOSystem system;
 	Assimp::IOStream* stream = system.Open (filePath.c_str (), "rb");
 	if (stream == nullptr) {
-		return;
+		return File ();
 	}
 	size_t fileSize = stream->FileSize ();
 	std::vector<std::uint8_t> content (fileSize);
 	stream->Read (&content[0], 1, fileSize);
-	fileList.AddFile (fileName, content);
+	return File (fileName, content);
 }
 
 int main (int /*argc*/, const char* argv[])
@@ -26,7 +26,8 @@ int main (int /*argc*/, const char* argv[])
 	}
 
 	FileList fileList;
-	AddFileToFileList (folderPath, "cube_with_materials.obj", fileList);
+	File mainFile = GetFile (folderPath, "cube_with_materials.obj");
+	fileList.SetPrimaryFile (mainFile.path, mainFile.content);
 	ImportFile (fileList);
 	return 0;
 }

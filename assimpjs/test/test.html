@@ -25,7 +25,7 @@
 				}).then ((arrayBuffer) => {
 					let fileList = new ajs.FileList ();
 					let fileBuffer = new Uint8Array (arrayBuffer, 0, arrayBuffer.byteLength);
-					fileList.AddFile ('cube_with_materials.3ds', fileBuffer);
+					fileList.SetPrimaryFile ('cube_with_materials.3ds', fileBuffer);
 					let result = ajs.ImportFile (fileList);
 					let resultJson = JSON.parse (result);
 					textArea.value = JSON.stringify (resultJson, null, 4);

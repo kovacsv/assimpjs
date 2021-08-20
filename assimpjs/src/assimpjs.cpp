@@ -20,29 +20,54 @@ static std::string GetFileName (const std::string& path)
 	return path.substr (lastSeparator, path.length () - lastSeparator);
 }
 
+File::File () :
+	path (),
+	content ()
+{
+}
+
+File::File (const std::string& path, const std::vector<std::uint8_t>& content) :
+	path (path),
+	content (content)
+{
+}
+
+bool File::IsValid () const
+{
+	return !path.empty () && !content.empty ();
+}
+
 FileList::FileList () :
+	primaryFile (),
 	files ()
 {
 }
 
-void FileList::AddFile (const std::string& path, const std::vector<std::uint8_t>& content)
+void FileList::SetPrimaryFile (const std::string& path, const std::vector<std::uint8_t>& content)
 {
-	files.push_back ({ path, content });
+	primaryFile = File (path, content);
 }
 
-size_t FileList::FileCount () const
+void FileList::AddSecondaryFile (const std::string& path, const std::vector<std::uint8_t>& content)
 {
-	return files.size ();
+	files.push_back (File (path, content));
 }
 
-const File* FileList::GetFile (size_t index) const
+const File* FileList::GetPrimaryFile () const
 {
-	return &files[index];
+	if (!primaryFile.IsValid ()) {
+		return nullptr;
+	}
+	return &primaryFile;
 }
 
 const File* FileList::GetFile (const std::string& path) const
 {
+	// TODO: case insensitive
 	std::string name = GetFileName (path);
+	if (name == GetFileName (primaryFile.path)) {
+		return &primaryFile;
+	}
 	for (const File& file : files) {
 		std::string fileName = GetFileName (file.path);
 		if (file.path == path) {
@@ -53,10 +78,17 @@ const File* FileList::GetFile (const std::string& path) const
 }
 
 #ifdef EMSCRIPTEN
-void FileList::AddFileEmscripten (const std::string& path, const emscripten::val& content)
+
+void FileList::SetPrimaryFileEmscripten (const std::string& path, const emscripten::val& content)
 {
 	std::vector<std::uint8_t> contentArr = emscripten::vecFromJSArray<std::uint8_t> (content);
-	AddFile (path, contentArr);
+	SetPrimaryFile (path, contentArr);
+}
+
+void FileList::AddSecondaryFileEmscripten (const std::string& path, const emscripten::val& content)
+{
+	std::vector<std::uint8_t> contentArr = emscripten::vecFromJSArray<std::uint8_t> (content);
+	AddSecondaryFile (path, contentArr);
 }
 #endif
 
@@ -266,13 +298,15 @@ private:
 
 std::string ImportFile (const FileList& fileList)
 {
-	if (fileList.FileCount () == 0) {
+	// TODO: json errors
+	const File* primaryFile = fileList.GetPrimaryFile ();
+	if (primaryFile == nullptr) {
 		return "error";
 	}
 
 	Assimp::Importer importer;
 	importer.SetIOHandler (new ImportIOSystem (fileList));
-	const aiScene* scene = importer.ReadFile (fileList.GetFile (0)->path,
+	const aiScene* scene = importer.ReadFile (primaryFile->path,
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
@@ -299,7 +333,8 @@ EMSCRIPTEN_BINDINGS (assimpjs)
 {
 	emscripten::class_<FileList> ("FileList")
 		.constructor<> ()
-		.function ("AddFile", &FileList::AddFileEmscripten)
+		.function ("SetPrimaryFile", &FileList::SetPrimaryFileEmscripten)
+		.function ("AddSecondaryFile", &FileList::AddSecondaryFileEmscripten)
 	;
 
 	emscripten::function<std::string, const FileList&> ("ImportFile", &ImportFile);

@@ -11,6 +11,11 @@
 class File
 {
 public:
+	File ();
+	File (const std::string& path, const std::vector<std::uint8_t>& content);
+
+	bool	IsValid () const;
+
 	std::string					path;
 	std::vector<std::uint8_t>	content;
 };
@@ -20,17 +25,20 @@ class FileList
 public:
 	FileList ();
 
-	void			AddFile (const std::string& path, const std::vector<std::uint8_t>& content);
-	size_t			FileCount () const;
-	const File*		GetFile (size_t index) const;
+	void			SetPrimaryFile (const std::string& path, const std::vector<std::uint8_t>& content);
+	void			AddSecondaryFile (const std::string& path, const std::vector<std::uint8_t>& content);
+	
+	const File*		GetPrimaryFile () const;
 	const File*		GetFile (const std::string& path) const;
 
 #ifdef EMSCRIPTEN
-	void			AddFileEmscripten (const std::string& path, const emscripten::val& content);
+	void			SetPrimaryFileEmscripten (const std::string& path, const emscripten::val& content);
+	void			AddSecondaryFileEmscripten (const std::string& path, const emscripten::val& content);
 #endif
 
 
 private:
+	File				primaryFile;
 	std::vector<File>	files;
 };
 
