@@ -1,6 +1,6 @@
 # assimpjs
 
-The [Emscripten](https://emscripten.org) port of [assimp](https://github.com/assimp/assimp). It runs entirely in the browser, and allows you to import assimp's 40+ 3D file formats, and access the result in JSON format.
+The [emscripten](https://emscripten.org) port of the [assimp](https://github.com/assimp/assimp) library. It runs entirely in the browser, and allows you to import assimp's 40+ 3D file formats, and access the result in JSON format.
 
 [![Native Build](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml)
 [![Emscripten Build](https://github.com/kovacsv/assimpjs/actions/workflows/emscripten_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/emscripten_build.yml)
