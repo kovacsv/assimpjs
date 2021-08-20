@@ -25,23 +25,20 @@ class FileList
 public:
 	FileList ();
 
-	void			SetPrimaryFile (const std::string& path, const std::vector<std::uint8_t>& content);
-	void			AddSecondaryFile (const std::string& path, const std::vector<std::uint8_t>& content);
+	void			AddFile (const std::string& path, const std::vector<std::uint8_t>& content);
 	
-	const File*		GetPrimaryFile () const;
+	size_t			FileCount () const;
+	const File*		GetMainFile () const;
 	const File*		GetFile (const std::string& path) const;
 
 #ifdef EMSCRIPTEN
-	void			SetPrimaryFileEmscripten (const std::string& path, const emscripten::val& content);
-	void			AddSecondaryFileEmscripten (const std::string& path, const emscripten::val& content);
+	void			AddFileEmscripten (const std::string& path, const emscripten::val& content);
 #endif
 
-
 private:
-	File				primaryFile;
 	std::vector<File>	files;
 };
 
-std::string ImportFile (const FileList& fileList);
+std::string ImportModel (const FileList& fileList);
 
 #endif

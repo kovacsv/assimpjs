@@ -1,15 +1,17 @@
 # assimpjs
 
-The [emscripten](https://emscripten.org) port of the [assimp](https://github.com/assimp/assimp) library. It runs entirely in the browser, and allows you to import assimp's 40+ 3D file formats, and access the result in JSON format.
+The [emscripten](https://emscripten.org) port of the [assimp](https://github.com/assimp/assimp) library. It runs entirely in the browser, and allows you to import 40+ 3D file formats and access the result in JSON format.
 
 [![Native Build](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml)
 [![Emscripten Build](https://github.com/kovacsv/assimpjs/actions/workflows/emscripten_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/emscripten_build.yml)
 
 ## How to use?
 
-The library runs in the browser, and as a node module as well.
+The library runs in the browser and as a node.js module as well.
 
-Given that browsers don't access the file system, you should provide all the files needed for import. Some 3D formats are coming in multiple files, so you should list all of them to import the model properly. The main file to import is called primary file, all the others are called secondary files.
+You will need two files: `assimpjs.js` and `assimpjs.wasm`. The wasm file is loaded runtime by the js file.
+
+Given that browsers don't access the file system, you should provide all the files needed for import. Some 3D formats are coming in multiple files, so you should list all of them to import the model properly. The main file to import should always be the first one in the list.
 
 You should provide two things for every file:
 - **name:** The name of the file. It's used if files are referring to each other.
@@ -27,60 +29,55 @@ After that, download the model files, and pass them to assimpjs.
 
 ```js
 assimpjs ().then (function (ajs) {
+    // fetch the files to import (make sure that the main file is the first)
     let files = [
         'testfiles/cube_with_materials.obj',
         'testfiles/cube_with_materials.mtl'
     ];
-    // fetch all the files
     Promise.all (files.map ((file) => fetch (file))).then ((responses) => {
         return Promise.all (responses.map ((res) => res.arrayBuffer ()));
     }).then ((arrayBuffers) => {
-        // create a file list object
+        // create new file list object
         let fileList = new ajs.FileList ();
+        for (let i = 0; i < files.length; i++) {
+            fileList.AddFile (files[i], new Uint8Array (arrayBuffers[i]));
+        }
         
-        // add primary file
-        fileList.SetPrimaryFile (files[0], new Uint8Array (arrayBuffers[0]));
+        // import model
+        let result = ajs.ImportModel (fileList);
         
-        // add secondary files if needed
-        fileList.AddSecondaryFile (files[1], new Uint8Array (arrayBuffers[1]));
-        
-        // import the files
-        let result = ajs.ImportFile (fileList);
-        
-        // parse the result as JSON
+        // parse the result json
         let resultJson = JSON.parse (result);
     });
 });
 ```
 
-### Use as a node module
+### Use as a node.js module
 
-You should require the `assimpjs.js` module in your script.
+You should require the `assimpjs.js` module in your script. In node.js you can use the file system module to get the buffer of each file.
 
 ```js
 let fs = require ('fs');
 const assimpjs = require ('./assimpjs.js')();
 
 assimpjs.then ((ajs) => {
-    // create a file list object
+    // create new file list object
     let fileList = new ajs.FileList ();
     
-    // add primary file
-    fileList.SetPrimaryFile (
+    // add model files (make sure that the main file is the first)
+    fileList.AddFile (
         'cube_with_materials.obj',
         fs.readFileSync ('testfiles/cube_with_materials.obj')
     );
-    
-    // add secondary files if needed
-    fileList.AddSecondaryFile (
+    fileList.AddFile (
         'cube_with_materials.mtl',
         fs.readFileSync ('testfiles/cube_with_materials.mtl')
     );
     
-    // import the files
-    let result = ajs.ImportFile (fileList);
+    // import model
+    let result = ajs.ImportModel (fileList);
     
-    // parse the result as JSON
+    // parse the result json
     let resultJson = JSON.parse (result);
 });
 ```

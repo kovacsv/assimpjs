@@ -27,7 +27,7 @@ int main (int /*argc*/, const char* argv[])
 
 	FileList fileList;
 	File mainFile = GetFile (folderPath, "cube_with_materials.obj");
-	fileList.SetPrimaryFile (mainFile.path, mainFile.content);
+	fileList.AddFile (mainFile.path, mainFile.content);
 	ImportFile (fileList);
 	return 0;
 }

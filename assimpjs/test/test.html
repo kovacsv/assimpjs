@@ -2,45 +2,47 @@
 <html>
 
 <head>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
 
-	<title>AssimpJS Demo</title>
-	<script type="text/javascript" src="assimpjs.js"></script>
-	<style>
-		textarea
-		{
-			width: 90%;
-			height: 500px;
-			box-sizing: border-box;
-		}
-	</style>
-	
-	<script type='text/javascript'>
-		window.onload = function () {
-			let textArea = document.getElementById ('result_json');
-			assimpjs ().then (function (ajs) {
-				let files = [
-					'testfiles/cube_with_materials.obj',
-					'testfiles/cube_with_materials.mtl'
-				];
-				Promise.all (files.map ((file) => fetch (file))).then ((responses) => {
-					return Promise.all (responses.map ((res) => res.arrayBuffer ()));
-				}).then ((arrayBuffers) => {
-					let fileList = new ajs.FileList ();
-					fileList.SetPrimaryFile (files[0], new Uint8Array (arrayBuffers[0]));
-					fileList.AddSecondaryFile (files[1], new Uint8Array (arrayBuffers[1]));
-					let result = ajs.ImportFile (fileList);
-					let resultJson = JSON.parse (result);
-					textArea.value = JSON.stringify (resultJson, null, 4);
-				});
-			});
-		};
-	</script>
+    <title>AssimpJS Demo</title>
+    <script type="text/javascript" src="assimpjs.js"></script>
+    
+    <script type='text/javascript'>
+        window.onload = function () {
+            let resultDiv = document.getElementById ('result_json');
+            
+assimpjs ().then (function (ajs) {
+    // fetch the files to import (make sure that the main file is the first)
+    let files = [
+        'testfiles/cube_with_materials.obj',
+        'testfiles/cube_with_materials.mtl'
+    ];
+    Promise.all (files.map ((file) => fetch (file))).then ((responses) => {
+        return Promise.all (responses.map ((res) => res.arrayBuffer ()));
+    }).then ((arrayBuffers) => {
+        // create new file list object
+        let fileList = new ajs.FileList ();
+        for (let i = 0; i < files.length; i++) {
+            fileList.AddFile (files[i], new Uint8Array (arrayBuffers[i]));
+        }
+        
+        // import model
+        let result = ajs.ImportModel (fileList);
+        
+        // parse the result json
+        let resultJson = JSON.parse (result);
+        
+        resultDiv.innerHTML = JSON.stringify (resultJson, null, 4);
+    });
+});
+
+        };
+    </script>
 </head>
 
 <body>
-	<textarea id="result_json"></textarea>
+    <pre id="result_json"></pre>
 </body>
 
 </html>
