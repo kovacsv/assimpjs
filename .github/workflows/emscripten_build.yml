@@ -1,0 +1,34 @@
+name: Emscripten Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ${{matrix.os-type}}
+
+    strategy:
+      matrix:
+        os-type: [windows-latest]
+        configuration: [Debug, Release, RelWithDebInfo]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Get Emscripten
+      run: |
+        git clone https://github.com/emscripten-core/emsdk.git
+        cd emsdk
+        git pull
+        emsdk install latest
+        emsdk activate latest
+        emsdk install mingw-4.6.2-32bit
+        emsdk activate mingw-4.6.2-32bit
+        cd ..
+    - name: Build Emscripten
+      run: em_build_win.bat ${{github.workspace}}/emsdk ${{matrix.configuration}}
