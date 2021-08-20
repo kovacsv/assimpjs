@@ -23,12 +23,12 @@ jobs:
     - name: Get Emscripten
       run: |
         git clone https://github.com/emscripten-core/emsdk.git
-        cd emsdk
+        cd ${{github.workspace}}/emsdk
         git pull
         emsdk install latest
         emsdk activate latest
         emsdk install mingw-4.6.2-32bit
         emsdk activate mingw-4.6.2-32bit
-        cd ..
+        cd ${{github.workspace}}
     - name: Build Emscripten
       run: em_build_win.bat ${{github.workspace}}/emsdk ${{matrix.configuration}}
