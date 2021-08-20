@@ -64,10 +64,16 @@ assimpjs.then ((ajs) => {
     let fileList = new ajs.FileList ();
     
     // add primary file
-    fileList.SetPrimaryFile ('cube_with_materials.obj', fs.readFileSync ('testfiles/cube_with_materials.obj'))
+    fileList.SetPrimaryFile (
+        'cube_with_materials.obj',
+        fs.readFileSync ('testfiles/cube_with_materials.obj')
+    );
     
     // add secondary files if needed
-    fileList.AddSecondaryFile ('cube_with_materials.mtl', fs.readFileSync ('testfiles/cube_with_materials.mtl'))
+    fileList.AddSecondaryFile (
+        'cube_with_materials.mtl',
+        fs.readFileSync ('testfiles/cube_with_materials.mtl')
+    );
     
     // import the files
     let result = ajs.ImportFile (fileList);
