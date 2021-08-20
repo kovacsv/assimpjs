@@ -25,7 +25,7 @@
 					'testfiles/cube_with_materials.mtl'
 				];
 				Promise.all (files.map ((file) => fetch (file))).then ((responses) => {
-					return Promise.all (responses.map ((res) => res.arrayBuffer()));
+					return Promise.all (responses.map ((res) => res.arrayBuffer ()));
 				}).then ((arrayBuffers) => {
 					let fileList = new ajs.FileList ();
 					fileList.SetPrimaryFile (files[0], new Uint8Array (arrayBuffers[0]));
