@@ -43,7 +43,7 @@ if (${EMSCRIPTEN})
 	target_link_options (AssimpJS PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)
 	target_link_options (AssimpJS PUBLIC --bind)
 	
-	get_filename_component (AssimpJSTestFolderAbsolute "${CMAKE_CURRENT_LIST_DIR}/assimpjs/test" ABSOLUTE)
+	get_filename_component (AssimpJSTestFolderAbsolute "${CMAKE_CURRENT_LIST_DIR}/assimpjs/test_js" ABSOLUTE)
 	add_custom_command (TARGET AssimpJS POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory ${AssimpJSTestFolderAbsolute} $<TARGET_FILE_DIR:AssimpJS>
 	)
@@ -65,7 +65,7 @@ add_custom_command (TARGET AssimpJS POST_BUILD
 
 if (${EMSCRIPTEN})
 else ()
-	set (AssimpJSTestSourcesFolder assimpjs/test)
+	set (AssimpJSTestSourcesFolder assimpjs/test_cpp)
 	file (GLOB
 		AssimpJSTestSourceFiles
 		${AssimpJSTestSourcesFolder}/*.hpp

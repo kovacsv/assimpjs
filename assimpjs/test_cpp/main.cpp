@@ -28,6 +28,6 @@ int main (int /*argc*/, const char* argv[])
 	FileList fileList;
 	File mainFile = GetFile (folderPath, "cube_with_materials.obj");
 	fileList.AddFile (mainFile.path, mainFile.content);
-	ImportFile (fileList);
+	ImportModel (fileList);
 	return 0;
 }
