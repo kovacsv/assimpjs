@@ -1,0 +1,24 @@
+name: CMake Native Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ${{matrix.os-type}}
+
+    strategy:
+      matrix:
+        os-type: [windows-latest]
+        configuration: [Debug, Release, RelWithDebInfo]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Configure
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.configuration}}
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{matrix.configuration}}
