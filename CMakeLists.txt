@@ -13,9 +13,9 @@ function (SetCompilerOptions module)
 	target_compile_options (${module} PUBLIC "$<$<CONFIG:Debug>:-DDEBUG>")
 	if (WIN32)
 		set (AdditionalWarnings /w44061 /w44062 /w44265 /w44266 /w44355 /w44596 /w44800)
-		target_compile_options (${module} PUBLIC /W4 ${AdditionalWarnings})
+		target_compile_options (${module} PUBLIC /W3 ${AdditionalWarnings})
 	else ()
-		target_compile_options (${module} PUBLIC -std=c++11 -Wall -Wextra)
+		target_compile_options (${module} PUBLIC -std=c++11)
 	endif ()
 endfunction ()
 
@@ -57,6 +57,11 @@ set_target_properties(AssimpJS PROPERTIES OUTPUT_NAME assimpjs)
 set_target_properties (AssimpJS PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 
 # AssimpJSTest
+
+get_filename_component (AssimpJSTestFilesFolderAbsolute "${CMAKE_CURRENT_LIST_DIR}/assimpjs/testfiles" ABSOLUTE)
+add_custom_command (TARGET AssimpJS POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${AssimpJSTestFilesFolderAbsolute} $<TARGET_FILE_DIR:AssimpJS>/testfiles
+)
 
 if (${EMSCRIPTEN})
 else ()

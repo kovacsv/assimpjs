@@ -1,6 +1,7 @@
 #include "assimpjs.hpp"
 
 #include <assimp/Importer.hpp>
+#include <assimp/Exporter.hpp>
 #include <assimp/IOStream.hpp>
 #include <assimp/IOSystem.hpp>
 #include <assimp/scene.h>
@@ -29,6 +30,11 @@ void FileList::AddFile (const std::string& path, const std::vector<std::uint8_t>
 	files.push_back ({ path, content });
 }
 
+size_t FileList::FileCount () const
+{
+	return files.size ();
+}
+
 const File* FileList::GetFile (size_t index) const
 {
 	return &files[index];
@@ -54,21 +60,16 @@ void FileList::AddFileEmscripten (const std::string& path, const emscripten::val
 }
 #endif
 
-int MeaningOfLife ()
-{
-	return 42;
-}
-
-class JSIOStream: public Assimp::IOStream
+class ImportIOStream: public Assimp::IOStream
 {
 public:
-	JSIOStream (const File& file) :
+	ImportIOStream (const File& file) :
 		file (file),
 		position (0)
 	{
 	}
 
-	virtual ~JSIOStream ()
+	virtual ~ImportIOStream ()
 	{
 	}
 	
@@ -97,6 +98,8 @@ public:
 			case aiOrigin_END:
 				position = file.content.size () - pOffset;
 				break;
+			default:
+				break;
 		}
 		return aiReturn::aiReturn_SUCCESS;
 	}
@@ -121,15 +124,15 @@ private:
 	size_t			position;
 };
 
-class JSIOSystem : public Assimp::IOSystem
+class ImportIOSystem : public Assimp::IOSystem
 {
 public:
-	JSIOSystem (const FileList& fileList) :
+	ImportIOSystem (const FileList& fileList) :
 		fileList (fileList)
 	{
 	}
 
-	virtual ~JSIOSystem ()
+	virtual ~ImportIOSystem ()
 	{
 	
 	}
@@ -150,7 +153,7 @@ public:
 		if (foundFile == nullptr) {
 			return nullptr;
 		}
-		return new JSIOStream (*foundFile);
+		return new ImportIOStream (*foundFile);
 	}
 
 	virtual void Close (Assimp::IOStream* pFile) override
@@ -162,10 +165,109 @@ private:
 	const FileList& fileList;
 };
 
+class ExportIOStream : public Assimp::IOStream
+{
+public:
+	ExportIOStream (std::vector<std::string>& resultFiles) :
+		resultFiles (resultFiles),
+		result ()
+	{
+	}
+
+	virtual ~ExportIOStream ()
+	{
+		if (!result.empty ()) {
+			resultFiles.push_back (result);
+		}
+	}
+
+	virtual size_t Read (void* pvBuffer, size_t pSize, size_t pCount) override
+	{
+		throw std::logic_error ("not implemented");
+	}
+
+	virtual size_t Write (const void* pvBuffer, size_t pSize, size_t pCount) override
+	{
+		size_t memSize = pSize * pCount;
+		result.append ((char*) pvBuffer, memSize);
+		return memSize;
+	}
+
+	virtual aiReturn Seek (size_t pOffset, aiOrigin pOrigin) override
+	{
+		throw std::logic_error ("not implemented");
+	}
+
+	virtual size_t Tell () const override
+	{
+		throw std::logic_error ("not implemented");
+	}
+
+	virtual size_t FileSize () const override
+	{
+		throw std::logic_error ("not implemented");
+	}
+
+	virtual void Flush () override
+	{
+
+	}
+
+private:
+	std::vector<std::string>& resultFiles;
+	std::string result;
+};
+
+class ExportIOSystem : public Assimp::IOSystem
+{
+public:
+	ExportIOSystem () :
+		resultFiles ()
+	{
+	}
+
+	virtual ~ExportIOSystem ()
+	{
+
+	}
+
+	virtual bool Exists (const char* pFile) const override
+	{
+		return false;
+	}
+
+	virtual char getOsSeparator () const override
+	{
+		return '/';
+	}
+
+	virtual Assimp::IOStream* Open (const char* pFile, const char* pMode) override
+	{
+		return new ExportIOStream (resultFiles);
+	}
+
+	virtual void Close (Assimp::IOStream* pFile) override
+	{
+		delete pFile;
+	}
+
+	const std::vector<std::string>& GetResultFiles () const
+	{
+		return resultFiles;
+	}
+
+private:
+	std::vector<std::string> resultFiles;
+};
+
 std::string ImportFile (const FileList& fileList)
 {
+	if (fileList.FileCount () == 0) {
+		return "error";
+	}
+
 	Assimp::Importer importer;
-	importer.SetIOHandler (new JSIOSystem (fileList));
+	importer.SetIOHandler (new ImportIOSystem (fileList));
 	const aiScene* scene = importer.ReadFile (fileList.GetFile (0)->path,
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
@@ -174,7 +276,17 @@ std::string ImportFile (const FileList& fileList)
 	if (scene == nullptr) {
 		return "error";
 	}
-	return "success";
+
+	Assimp::Exporter exporter;
+	ExportIOSystem* exportIOSystem = new ExportIOSystem ();
+	exporter.SetIOHandler (exportIOSystem);
+	exporter.Export (scene, "assjson", "result.json");
+
+	const std::vector<std::string>& resultFiles = exportIOSystem->GetResultFiles ();
+	if (resultFiles.size () != 1) {
+		return "error";
+	}
+	return resultFiles[0];
 }
 
 #ifdef EMSCRIPTEN
@@ -186,7 +298,6 @@ EMSCRIPTEN_BINDINGS (assimpjs)
 		.function ("AddFile", &FileList::AddFileEmscripten)
 	;
 
-	emscripten::function<int> ("MeaningOfLife", &MeaningOfLife);
 	emscripten::function<std::string, const FileList&> ("ImportFile", &ImportFile);
 }
 

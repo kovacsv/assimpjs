@@ -1,20 +1,32 @@
-#include "assimpjs.hpp"
 #include <assimp/DefaultIOSystem.h>
 #include <assimp/IOStream.hpp>
 
-int main ()
+#include "assimpjs.hpp"
+
+static void AddFileToFileList (const std::string& folderPath, const std::string& fileName, FileList& fileList)
 {
-	//Assimp::DefaultIOSystem system;
-	//Assimp::IOStream* stream = system.Open ("C:\\Users\\kovacsv\\GitRepos\\assimpjs\\em_build\\Debug\\cube_four_instances.3ds", "rb");
-	//if (stream == nullptr) {
-	//	return 1;
-	//}
-	//size_t fileSize = stream->FileSize ();
-	//std::vector<std::uint8_t> content (fileSize);
-	//stream->Read (&content[0], 1, fileSize);
+	std::string filePath = folderPath + "\\testfiles\\" + fileName;
+	Assimp::DefaultIOSystem system;
+	Assimp::IOStream* stream = system.Open (filePath.c_str (), "rb");
+	if (stream == nullptr) {
+		return;
+	}
+	size_t fileSize = stream->FileSize ();
+	std::vector<std::uint8_t> content (fileSize);
+	stream->Read (&content[0], 1, fileSize);
+	fileList.AddFile (fileName, content);
+}
+
+int main (int /*argc*/, const char* argv[])
+{
+	std::string folderPath = argv[0];
+	size_t lastSeparator = folderPath.find_last_of ('\\');
+	if (lastSeparator != std::string::npos) {
+		folderPath = folderPath.substr (0, lastSeparator);
+	}
 
 	FileList fileList;
-	fileList.AddFile ("example.ext", { 0, 1, 2, 3 });
+	AddFileToFileList (folderPath, "cube_with_materials.3ds", fileList);
 	ImportFile (fileList);
 	return 0;
 }

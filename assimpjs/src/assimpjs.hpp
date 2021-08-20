@@ -21,6 +21,7 @@ public:
 	FileList ();
 
 	void			AddFile (const std::string& path, const std::vector<std::uint8_t>& content);
+	size_t			FileCount () const;
 	const File*		GetFile (size_t index) const;
 	const File*		GetFile (const std::string& path) const;
 
@@ -32,8 +33,6 @@ public:
 private:
 	std::vector<File>	files;
 };
-
-int MeaningOfLife ();
 
 std::string ImportFile (const FileList& fileList);
 
