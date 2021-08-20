@@ -7,21 +7,36 @@
 
 	<title>AssimpJS Demo</title>
 	<script type="text/javascript" src="assimpjs.js"></script>
+	<style>
+		textarea
+		{
+			width: 90%;
+			height: 500px;
+			box-sizing: border-box;
+		}
+	</style>
 	
 	<script type='text/javascript'>
 		window.onload = function () {
+			let textArea = document.getElementById ('result_json');
 			assimpjs ().then (function (ajs) {
-				let fileList = new ajs.FileList ();
-				fileList.AddFile ('example.ext', new Uint8Array ([1, 2, 3, 4]));
-				let result = ajs.ImportFile (fileList);
-				console.log (result);
+				fetch ('testfiles/cube_with_materials.3ds').then ((response) => {
+					return response.arrayBuffer ();
+				}).then ((arrayBuffer) => {
+					let fileList = new ajs.FileList ();
+					let fileBuffer = new Uint8Array (arrayBuffer, 0, arrayBuffer.byteLength);
+					fileList.AddFile ('cube_with_materials.3ds', fileBuffer);
+					let result = ajs.ImportFile (fileList);
+					let resultJson = JSON.parse (result);
+					textArea.value = JSON.stringify (resultJson, null, 4);
+				});
 			});
 		};
 	</script>
 </head>
 
 <body>
-	
+	<textarea id="result_json"></textarea>
 </body>
 
 </html>
