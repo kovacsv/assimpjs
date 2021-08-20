@@ -17,9 +17,41 @@ You should provide two things for every file:
 
 ### Use from the browser
 
-You will need the `assimpjs.js`, and the `assimpjs.wasm` files.
+First, include the `assimpjs.js` file in your website.
 
-...
+```html
+<script type="text/javascript" src="assimpjs.js"></script>
+```
+
+After that, download the model files, and pass them to assimpjs.
+
+```js
+assimpjs ().then (function (ajs) {
+    let files = [
+        'testfiles/cube_with_materials.obj',
+        'testfiles/cube_with_materials.mtl'
+    ];
+    // fetch all the files
+    Promise.all (files.map ((file) => fetch (file))).then ((responses) => {
+        return Promise.all (responses.map ((res) => res.arrayBuffer()));
+    }).then ((arrayBuffers) => {
+        // create a file list object
+        let fileList = new ajs.FileList ();
+        
+        // add primary file
+        fileList.SetPrimaryFile (files[0], new Uint8Array (arrayBuffers[0]));
+        
+        // add secondary files if needed
+        fileList.AddSecondaryFile (files[1], new Uint8Array (arrayBuffers[1]));
+        
+        // import the files
+        let result = ajs.ImportFile (fileList);
+        
+        // parse the result as JSON
+        let resultJson = JSON.parse (result);
+    });
+});
+```
 
 ### Use as a node module
 
@@ -28,7 +60,7 @@ let fs = require ('fs');
 const assimpjs = require ('./assimpjs.js')();
 
 assimpjs.then ((ajs) => {
-    // let's create a file list object
+    // create a file list object
     let fileList = new ajs.FileList ();
     
     // add primary file
