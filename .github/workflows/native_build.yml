@@ -1,4 +1,4 @@
-name: CMake Native Build
+name: Native Build
 
 on:
   push:
