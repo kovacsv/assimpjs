@@ -22,7 +22,7 @@ FileList::FileList () :
 {
 }
 
-void FileList::AddFile (const std::string& path, std::vector<char> content)
+void FileList::AddFile (const std::string& path, const std::vector<char>& content)
 {
 	files.push_back ({ path, content });
 }

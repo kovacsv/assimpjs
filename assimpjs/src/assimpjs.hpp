@@ -16,7 +16,7 @@ class FileList
 public:
 	FileList ();
 
-	void			AddFile (const std::string& path, std::vector<char> content);
+	void			AddFile (const std::string& path, const std::vector<char>& content);
 	const File*		GetFile (size_t index) const;
 	const File*		GetFile (const std::string& path) const;
 
