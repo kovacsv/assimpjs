@@ -31,4 +31,4 @@ jobs:
         ./emsdk.bat activate mingw-4.6.2-32bit
         cd ${{github.workspace}}
     - name: Build Emscripten
-      run: em_build_win.bat ${{github.workspace}}/emsdk ${{matrix.configuration}}
+      run: ./em_build_win.bat ${{github.workspace}}/emsdk ${{matrix.configuration}}
