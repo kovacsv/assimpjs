@@ -11,7 +11,10 @@
 	<script type='text/javascript'>
 		window.onload = function () {
 			assimpjs ().then (function (ajs) {
-				alert (ajs.MeaningOfLife ());
+				let fileList = new ajs.FileList ();
+				fileList.AddFile ('example.ext', new Uint8Array ([1, 2, 3, 4]));
+				let result = ajs.ImportFile (fileList);
+				console.log (result);
 			});
 		};
 	</script>

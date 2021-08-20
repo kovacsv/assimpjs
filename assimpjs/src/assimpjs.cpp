@@ -7,6 +7,8 @@
 #include <assimp/postprocess.h>
 
 #include <stdexcept>
+#include <stdio.h>
+#include <iostream>
 
 static std::string GetFileName (const std::string& path)
 {
@@ -22,7 +24,7 @@ FileList::FileList () :
 {
 }
 
-void FileList::AddFile (const std::string& path, const std::vector<char>& content)
+void FileList::AddFile (const std::string& path, const std::vector<std::uint8_t>& content)
 {
 	files.push_back ({ path, content });
 }
@@ -43,6 +45,14 @@ const File* FileList::GetFile (const std::string& path) const
 	}
 	return nullptr;
 }
+
+#ifdef EMSCRIPTEN
+void FileList::AddFileEmscripten (const std::string& path, const emscripten::val& content)
+{
+	std::vector<std::uint8_t> contentArr = emscripten::vecFromJSArray<std::uint8_t> (content);
+	AddFile (path, contentArr);
+}
+#endif
 
 int MeaningOfLife ()
 {
@@ -85,7 +95,7 @@ public:
 				position += pOffset;
 				break;
 			case aiOrigin_END:
-				throw std::logic_error ("not implemented");
+				position = file.content.size () - pOffset;
 				break;
 		}
 		return aiReturn::aiReturn_SUCCESS;
@@ -152,7 +162,7 @@ private:
 	const FileList& fileList;
 };
 
-int ImportFile (const FileList& fileList)
+std::string ImportFile (const FileList& fileList)
 {
 	Assimp::Importer importer;
 	importer.SetIOHandler (new JSIOSystem (fileList));
@@ -161,18 +171,23 @@ int ImportFile (const FileList& fileList)
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
 		aiProcess_SortByPType);
-	return 42;
+	if (scene == nullptr) {
+		return "error";
+	}
+	return "success";
 }
 
 #ifdef EMSCRIPTEN
 
-#include <emscripten/bind.h>
-
 EMSCRIPTEN_BINDINGS (assimpjs)
 {
+	emscripten::class_<FileList> ("FileList")
+		.constructor<> ()
+		.function ("AddFile", &FileList::AddFileEmscripten)
+	;
 
 	emscripten::function<int> ("MeaningOfLife", &MeaningOfLife);
-
+	emscripten::function<std::string, const FileList&> ("ImportFile", &ImportFile);
 }
 
 #endif
