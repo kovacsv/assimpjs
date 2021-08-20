@@ -26,7 +26,7 @@ int main (int /*argc*/, const char* argv[])
 	}
 
 	FileList fileList;
-	AddFileToFileList (folderPath, "cube_with_materials.3ds", fileList);
+	AddFileToFileList (folderPath, "cube_with_materials.obj", fileList);
 	ImportFile (fileList);
 	return 0;
 }
