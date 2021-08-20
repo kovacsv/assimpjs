@@ -20,12 +20,16 @@
 		window.onload = function () {
 			let textArea = document.getElementById ('result_json');
 			assimpjs ().then (function (ajs) {
-				fetch ('testfiles/cube_with_materials.3ds').then ((response) => {
-					return response.arrayBuffer ();
-				}).then ((arrayBuffer) => {
+				let files = [
+					'testfiles/cube_with_materials.obj',
+					'testfiles/cube_with_materials.mtl'
+				];
+				Promise.all (files.map ((file) => fetch (file))).then ((responses) => {
+					return Promise.all (responses.map ((res) => res.arrayBuffer()));
+				}).then ((arrayBuffers) => {
 					let fileList = new ajs.FileList ();
-					let fileBuffer = new Uint8Array (arrayBuffer, 0, arrayBuffer.byteLength);
-					fileList.SetPrimaryFile ('cube_with_materials.3ds', fileBuffer);
+					fileList.SetPrimaryFile (files[0], new Uint8Array (arrayBuffers[0]));
+					fileList.AddSecondaryFile (files[1], new Uint8Array (arrayBuffers[1]));
 					let result = ajs.ImportFile (fileList);
 					let resultJson = JSON.parse (result);
 					textArea.value = JSON.stringify (resultJson, null, 4);
