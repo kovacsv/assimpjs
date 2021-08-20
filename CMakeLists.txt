@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.6)
 set_property (GLOBAL PROPERTY USE_FOLDERS ON)
 
 set (CMAKE_SUPPRESS_REGENERATION 1)
-set (CMAKE_CONFIGURATION_TYPES Debug;Release;RelWithDebInfo)
+set (CMAKE_CONFIGURATION_TYPES Debug;Release;RelWithDebInfo;MinSizeRel)
 
 add_definitions (-DUNICODE -D_UNICODE)
 

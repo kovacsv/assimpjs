@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os-type: [windows-latest]
-        configuration: [Debug, Release, RelWithDebInfo]
+        configuration: [Debug, MinSizeRel]
 
     steps:
     - uses: actions/checkout@v2
