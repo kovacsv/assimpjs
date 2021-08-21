@@ -41,5 +41,5 @@ jobs:
         npm install
     - name: Run Test
       run: |
-        set TEST_CONFIG=${{matrix.configuration}}
+        $env:TEST_CONFIG="${{matrix.configuration}}"
         npm run test
