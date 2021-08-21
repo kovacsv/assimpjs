@@ -39,7 +39,6 @@ jobs:
     - name: Update Package
       run: |
         npm install
-        npm run build
     - name: Run Test
       run: |
         set TEST_CONFIG=${{matrix.configuration}}
