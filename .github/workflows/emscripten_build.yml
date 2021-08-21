@@ -37,7 +37,7 @@ jobs:
     - name: Build Emscripten
       run: ./em_build_win.bat ${{github.workspace}}/emsdk ${{matrix.configuration}}
     - name: Update Package
-    - run: |
+      run: |
         npm install
         npm run build
         set TEST_CONFIG=${{matrix.configuration}}
