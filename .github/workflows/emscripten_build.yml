@@ -20,6 +20,10 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
+    - name: Setup node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
     - name: Get Emscripten
       run: |
         git clone https://github.com/emscripten-core/emsdk.git
@@ -32,3 +36,9 @@ jobs:
         cd ${{github.workspace}}
     - name: Build Emscripten
       run: ./em_build_win.bat ${{github.workspace}}/emsdk ${{matrix.configuration}}
+    - name: Update Package
+    - run: |
+        npm install
+        npm run build
+        set TEST_CONFIG=${{matrix.configuration}}
+        npm run test

@@ -22,7 +22,9 @@ endfunction ()
 # Assimp
 
 add_subdirectory (assimp)
-target_compile_options (assimp PUBLIC -fexceptions)
+if (${EMSCRIPTEN})
+	target_compile_options (assimp PUBLIC -fexceptions)
+endif ()
 
 # AssimpJS
 
@@ -46,9 +48,9 @@ if (${EMSCRIPTEN})
 	
 	target_link_options (AssimpJS PUBLIC --bind)
 	
-	get_filename_component (AssimpJSTestFolderAbsolute "${CMAKE_CURRENT_LIST_DIR}/assimpjs/test_js" ABSOLUTE)
+	get_filename_component (AssimpJSExamplesFolderAbsolute "${CMAKE_CURRENT_LIST_DIR}/examples" ABSOLUTE)
 	add_custom_command (TARGET AssimpJS POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory ${AssimpJSTestFolderAbsolute} $<TARGET_FILE_DIR:AssimpJS>
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${AssimpJSExamplesFolderAbsolute} $<TARGET_FILE_DIR:AssimpJS>
 	)
 else ()
 	add_library (AssimpJS ${AssimpJSSourceFiles})
@@ -68,16 +70,16 @@ add_custom_command (TARGET AssimpJS POST_BUILD
 
 if (${EMSCRIPTEN})
 else ()
-	set (AssimpJSTestSourcesFolder assimpjs/test_cpp)
+	set (AssimpJSExampleSourcesFolder assimpjs/example)
 	file (GLOB
-		AssimpJSTestSourceFiles
-		${AssimpJSTestSourcesFolder}/*.hpp
-		${AssimpJSTestSourcesFolder}/*.cpp
+		AssimpJSExampleSourceFiles
+		${AssimpJSExampleSourcesFolder}/*.hpp
+		${AssimpJSExampleSourcesFolder}/*.cpp
 	)
-	source_group ("Sources" FILES ${AssimpJSTestSourceFiles})
-	add_executable (AssimpJSTest ${AssimpJSTestSourceFiles})
-	SetCompilerOptions (AssimpJSTest)
-	target_include_directories (AssimpJSTest PUBLIC ${AssimpJSSourcesFolder} ${TinyCSGEmscriptenSourcesFolder})
-	target_link_libraries (AssimpJSTest AssimpJS)
-	set_target_properties (AssimpJSTest PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+	source_group ("Sources" FILES ${AssimpJSExampleSourceFiles})
+	add_executable (AssimpJSExample ${AssimpJSExampleSourceFiles})
+	SetCompilerOptions (AssimpJSExample)
+	target_include_directories (AssimpJSExample PUBLIC ${AssimpJSSourcesFolder} ${TinyCSGEmscriptenSourcesFolder})
+	target_link_libraries (AssimpJSExample AssimpJS)
+	set_target_properties (AssimpJSExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 endif ()
