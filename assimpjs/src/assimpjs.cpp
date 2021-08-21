@@ -96,14 +96,14 @@ public:
 	
 	virtual size_t Read (void* pvBuffer, size_t pSize, size_t pCount) override
 	{
-		size_t memSize = pSize * pCount;
-		size_t readableMemSize = std::min (FileSize () - position, memSize);
-		if (readableMemSize == 0) {
+		size_t remainingElemCount = (size_t) (std::floor ((FileSize () - position) / pSize));
+		size_t readableElemCount = std::min (remainingElemCount, pCount);
+		if (readableElemCount == 0) {
 			return 0;
 		}
-		memcpy (pvBuffer, &file.content[position], readableMemSize);
-		position += readableMemSize;
-		return readableMemSize;
+		memcpy (pvBuffer, &file.content[position], readableElemCount * pSize);
+		position += readableElemCount * pSize;
+		return readableElemCount;
 	}
 
 	virtual size_t Write (const void* pvBuffer, size_t pSize, size_t pCount) override
