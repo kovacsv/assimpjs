@@ -36,3 +36,11 @@ jobs:
         cd ${{github.workspace}}
     - name: Build Emscripten
       run: ./em_build_win.bat ${{github.workspace}}/emsdk ${{matrix.configuration}}
+    - name: Update Package
+      run: |
+        npm install
+        npm run build
+    - name: Run Test
+      run: |
+        set TEST_CONFIG=${{matrix.configuration}}
+        npm run test

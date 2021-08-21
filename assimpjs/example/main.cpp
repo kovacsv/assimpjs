@@ -39,13 +39,16 @@ int main (int /*argc*/, const char* argv[])
 	}
 
 	FileList fileList;
-	File mainFile = GetFile ("C:\\Users\\kovacsv\\GitRepos\\assimpjs\\assimp\\test\\models\\DXF\\PinkEggFromLW.dxf");
-	fileList.AddFile (mainFile.path, mainFile.content);
-	//File mainFile = GetTestFile (folderPath, "cube_with_materials.obj");
-	//File mtlFile = GetTestFile (folderPath, "cube_with_materials.mtl");
-
+	
+	//File mainFile = GetFile ("C:\\Users\\kovacsv\\GitRepos\\assimpjs\\assimp\\test\\models\\DXF\\PinkEggFromLW.dxf");
 	//fileList.AddFile (mainFile.path, mainFile.content);
-	//fileList.AddFile (mtlFile.path, mtlFile.content);
+	
+	File mainFile = GetTestFile (folderPath, "cube_with_materials.obj");
+	File mtlFile = GetTestFile (folderPath, "cube_with_materials.mtl");
+
+	fileList.AddFile (mainFile.path, mainFile.content);
+	fileList.AddFile (mtlFile.path, mtlFile.content);
+
 	ImportModel (fileList);
 	return 0;
 }

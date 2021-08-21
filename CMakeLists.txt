@@ -23,7 +23,7 @@ endfunction ()
 
 add_subdirectory (assimp)
 if (${EMSCRIPTEN})
-	target_compile_options (assimp PUBLIC -fexceptions)
+	#target_compile_options (assimp PUBLIC -fexceptions)
 endif ()
 
 # AssimpJS
