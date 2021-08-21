@@ -28,7 +28,7 @@ public:
 	void			AddFile (const std::string& path, const std::vector<std::uint8_t>& content);
 	
 	size_t			FileCount () const;
-	const File*		GetMainFile () const;
+	const File*		GetFile (size_t index) const;
 	const File*		GetFile (const std::string& path) const;
 
 #ifdef EMSCRIPTEN

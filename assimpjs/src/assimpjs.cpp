@@ -13,6 +13,7 @@
 
 static std::string GetFileName (const std::string& path)
 {
+	// TODO: windows separator
 	size_t lastSeparator = path.find_last_of ('/');
 	if (lastSeparator == std::wstring::npos) {
 		return path;
@@ -52,12 +53,9 @@ size_t FileList::FileCount () const
 	return files.size ();
 }
 
-const File* FileList::GetMainFile () const
+const File* FileList::GetFile (size_t index) const
 {
-	if (files.empty ()) {
-		return nullptr;
-	}
-	return &files[0];
+	return &files[index];
 }
 
 const File* FileList::GetFile (const std::string& path) const
@@ -285,21 +283,40 @@ private:
 	std::vector<std::string> resultFiles;
 };
 
+const aiScene* ImportModelByMainFile (Assimp::Importer& importer, const File* file)
+{
+	try {
+		const aiScene* scene = importer.ReadFile (file->path,
+			aiProcess_CalcTangentSpace |
+			aiProcess_Triangulate |
+			aiProcess_JoinIdenticalVertices |
+			aiProcess_SortByPType);
+		return scene;
+	} catch (...) {
+		// TODO: exception message
+		return nullptr;
+	}
+	return nullptr;
+}
+
 std::string ImportModel (const FileList& fileList)
 {
-	// TODO: json errors
-	const File* mainFile = fileList.GetMainFile ();
-	if (mainFile == nullptr) {
+	if (fileList.FileCount () == 0) {
 		return "error";
 	}
 
 	Assimp::Importer importer;
 	importer.SetIOHandler (new ImportIOSystem (fileList));
-	const aiScene* scene = importer.ReadFile (mainFile->path,
-		aiProcess_CalcTangentSpace |
-		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices |
-		aiProcess_SortByPType);
+
+	const aiScene* scene = nullptr;
+	for (size_t fileIndex = 0; fileIndex < fileList.FileCount (); fileIndex++) {
+		const File* file = fileList.GetFile (fileIndex);
+		scene = ImportModelByMainFile (importer, file);
+		if (scene != nullptr) {
+			break;
+		}
+	}
+
 	if (scene == nullptr) {
 		return "error";
 	}

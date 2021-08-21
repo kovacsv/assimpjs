@@ -25,7 +25,7 @@
 			});		
 		}
 		
-		function LoadFiles (ajs, files, onLoad)
+		function LoadModel (ajs, files, onLoad)
 		{
 			let downloadFiles = [];
 			for (let i = 0; i < files.length; i++) {
@@ -42,9 +42,10 @@
 		}
 	
         window.onload = function () {
+			let resultDiv = document.getElementById ('result');
+			resultDiv.innerHTML = 'Loading assimp.js...';
 			assimpjs ().then (function (ajs) {
-				let resultDiv = document.getElementById ('result_json');
-				let dropAreaDiv = document.getElementById ('drop_area');
+				resultDiv.innerHTML = 'Drag&Drop your models in this window.';
 				window.addEventListener ('dragstart', (ev) => {
 					ev.preventDefault ();
 				}, false);
@@ -57,7 +58,8 @@
 					ev.stopPropagation ();
 					ev.preventDefault ();
 					if (ev.dataTransfer.files.length > 0) {
-						LoadFiles (ajs, ev.dataTransfer.files, (result) => {
+						resultDiv.innerHTML = 'Loading model...';
+						LoadModel (ajs, ev.dataTransfer.files, (result) => {
 							resultDiv.innerHTML = result;
 						});
 					}
@@ -92,8 +94,7 @@
 </head>
 
 <body>
-	<div id="drop_area">Drag&drop files here</div>
-    <pre id="result_json"></pre>
+    <pre id="result"></pre>
 </body>
 
 </html>
