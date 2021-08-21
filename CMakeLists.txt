@@ -22,6 +22,7 @@ endfunction ()
 # Assimp
 
 add_subdirectory (assimp)
+target_compile_options (assimp PUBLIC -fexceptions)
 
 # AssimpJS
 

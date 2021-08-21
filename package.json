@@ -1,0 +1,15 @@
+{
+	"name": "assimp-js",
+	"description": "Javascript interface for the assimp library.",
+	"version": "0.0.1",
+	"repository": "github:kovacsv/assimpjs",
+	"license": "MIT",
+	"devDependencies": {
+		"http-server": "^0.12.3",
+		"mocha": "^8.3.2"
+	},
+	"scripts": {
+		"test": "mocha test"
+	},
+	"dependencies": {}
+}
