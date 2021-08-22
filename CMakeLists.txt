@@ -44,12 +44,13 @@ source_group ("Sources" FILES ${AssimpJSSourceFiles})
 if (${EMSCRIPTEN})
 	add_executable (AssimpJS ${AssimpJSSourceFiles})
 	target_compile_options (AssimpJS PUBLIC "$<$<CONFIG:Debug>:-gsource-map>")
-	target_compile_options (AssimpJS PUBLIC -fexceptions)
+	#target_compile_options (AssimpJS PUBLIC -fexceptions)
 
 	target_link_options (AssimpJS PUBLIC -sMODULARIZE=1)
 	target_link_options (AssimpJS PUBLIC -sEXPORT_NAME='assimpjs')
 	target_link_options (AssimpJS PUBLIC -sALLOW_MEMORY_GROWTH=1 --no-heap-copy)
 	target_link_options (AssimpJS PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)
+	#target_link_options (AssimpJS PUBLIC -sEXCEPTION_CATCHING_ALLOWED=[])
 	
 	target_link_options (AssimpJS PUBLIC --bind)
 	
@@ -88,3 +89,4 @@ else ()
 	target_link_libraries (AssimpJSExample AssimpJS)
 	set_target_properties (AssimpJSExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 endif ()
+

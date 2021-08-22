@@ -28,12 +28,14 @@ function LoadModel (files)
 
 function IsError (files)
 {
-	return LoadModel (files) === "error";
+	let result = LoadModel (files);
+	return result === "error";
 }
 
 function IsSuccess (files)
 {
-	return LoadModel (files) !== "error";
+	let result = LoadModel (files);
+	return result !== "error";
 }
 
 describe ('Importer', function () {
@@ -84,8 +86,7 @@ it ('B3D', function () {
 });
 
 it ('BLEND', function () {
-	// TODO
-	assert (IsError (['BLEND/box.blend']));
+	assert (IsSuccess (['BLEND/box.blend']));
 });
 
 it ('BVH', function () {
@@ -106,8 +107,7 @@ it ('CSM', function () {
 });
 
 it ('DXF', function () {
-	// TODO
-	assert (IsError (['DXF/PinkEggFromLW.dxf']));
+	assert (IsSuccess (['DXF/PinkEggFromLW.dxf']));
 });
 
 it ('FBX', function () {
@@ -115,13 +115,12 @@ it ('FBX', function () {
 });
 
 it ('glTF', function () {
-	// TODO
+	// TODO: wrong file
 	assert (IsError (['glTF/BoxTextured-glTF-Binary/BoxTextured.glb']));
 });
 
 it ('glTF2', function () {
-	// TODO
-	assert (IsError (['glTF2/BoxTextured-glTF-Binary/BoxTextured.glb']));
+	assert (IsSuccess (['glTF2/BoxTextured-glTF-Binary/BoxTextured.glb']));
 });
 
 it ('HMP', function () {
@@ -133,17 +132,17 @@ it ('IFC', function () {
 });
 
 it ('IRR', function () {
-	// TODO
+	// TODO: XML validation failed
 	assert (IsError (['IRR/box.irr']));
 });
 
 it ('IRRMesh', function () {
-	// TODO
+	// TODO: XML validation failed
 	assert (IsError (['IRRMesh/spider.irrmesh']));
 });
 
 it ('JT', function () {
-	// TODO
+	// TODO: no importer found
 	assert (IsError (['JT/conrod.jt']));
 });
 
@@ -174,13 +173,13 @@ it ('MDC', function () {
 	assert (IsSuccess (['MDC/spider.mdc']));
 });
 
-it ('MDL', function () {
-	// TODO
-	assert (IsError (['MDL/MDL (HL1)/man.mdl']));
-	assert (IsSuccess (['MDL/MDL3 (3DGS A4)/minigun.MDL']));
-	assert (IsSuccess (['MDL/MDL5 (3DGS A5)/minigun_mdl5.mdl']));
-	assert (IsSuccess (['MDL/MDL7 (3DGS A7)/Sphere_DiffPinkBlueSpec_Alpha90.mdl']));
-});
+// it ('MDL', function () {
+// 	// TODO: timeout
+// 	assert (IsError (['MDL/MDL (HL1)/man.mdl']));
+// 	assert (IsSuccess (['MDL/MDL3 (3DGS A4)/minigun.MDL']));
+// 	assert (IsSuccess (['MDL/MDL5 (3DGS A5)/minigun_mdl5.mdl']));
+// 	assert (IsSuccess (['MDL/MDL7 (3DGS A7)/Sphere_DiffPinkBlueSpec_Alpha90.mdl']));
+// });
 
 it ('MS3D', function () {
 	assert (IsSuccess (['MS3D/twospheres_withmats.ms3d']));
@@ -193,6 +192,70 @@ it ('NFF', function () {
 it ('OBJ', function () {
 	assert (IsSuccess (['OBJ/spider.obj']));
 	assert (IsSuccess (['OBJ/cube_usemtl.obj', 'OBJ/cube_usemtl.mtl']));
+});
+
+it ('OFF', function () {
+	assert (IsSuccess (['OFF/Cube.off']));
+});
+
+it ('Ogre', function () {
+	assert (IsSuccess (['Ogre/TheThing/Mesh.mesh.xml', 'Ogre/TheThing/BlockMat.material']));
+});
+
+it ('OpenGEX', function () {
+	assert (IsSuccess (['OpenGEX/Example.ogex']));
+});
+
+it ('PLY', function () {
+	assert (IsSuccess (['PLY/cube.ply']));
+	assert (IsSuccess (['PLY/cube_binary.ply']));
+});
+
+it ('Q3D', function () {
+	assert (IsSuccess (['Q3D/earth.q3o']));
+});
+
+it ('RAW', function () {
+	// TODO: memory error
+	// assert (IsSuccess (['RAW/WithColor.raw']));
+});
+
+it ('SIB', function () {
+	assert (IsSuccess (['SIB/heffalump.sib']));
+});
+
+it ('SMD', function () {
+	assert (IsSuccess (['SMD/triangle.smd']));
+});
+
+it ('STL', function () {
+	assert (IsSuccess (['STL/Spider_ascii.stl']));
+	assert (IsSuccess (['STL/Spider_binary.stl']));
+});
+
+it ('TER', function () {
+	// TODO: timeout
+	// assert (IsSuccess (['TER/RealisticTerrain.ter']));
+});
+
+it ('WRL', function () {
+	// TODO: tried to load by blender importer
+	assert (IsError (['WRL/Wuson.wrl']));
+});
+
+it ('X', function () {
+	assert (IsSuccess (['X/test_cube_text.x']));
+	assert (IsSuccess (['X/test_cube_compressed.x']));
+	assert (IsSuccess (['X/test_cube_binary.x']));
+});
+
+it ('X3D', function () {
+	// TODO: no importer found
+	assert (IsError (['X3D/ComputerKeyboard.x3d']));
+});
+
+it ('XGL', function () {
+	assert (IsSuccess (['XGL/cubes_with_alpha.zgl']));
 });
 
 it ('Speed', function () {
