@@ -23,12 +23,8 @@ endfunction ()
 
 add_subdirectory (assimp)
 if (${EMSCRIPTEN})
-	# TODO: This option enables exception handling in assimp sources, but it comes
-	# with a price. Given that webassemly doesn't support exceptions natively, this
-	# option simulates exception handling with javascript. This causes dramatic speed
-	# decrease, but with this option all of the importers work. The real solution is
-	# to wait while -fwasm-exceptions will be implemented in all major browsers.
-	#target_compile_options (assimp PUBLIC -fexceptions)
+	target_compile_options (assimp PUBLIC -fexceptions)
+	target_link_options (assimp PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)	
 endif ()
 
 # AssimpJS
@@ -44,13 +40,12 @@ source_group ("Sources" FILES ${AssimpJSSourceFiles})
 if (${EMSCRIPTEN})
 	add_executable (AssimpJS ${AssimpJSSourceFiles})
 	target_compile_options (AssimpJS PUBLIC "$<$<CONFIG:Debug>:-gsource-map>")
-	#target_compile_options (AssimpJS PUBLIC -fexceptions)
+	target_compile_options (AssimpJS PUBLIC -fexceptions)
 
 	target_link_options (AssimpJS PUBLIC -sMODULARIZE=1)
 	target_link_options (AssimpJS PUBLIC -sEXPORT_NAME='assimpjs')
 	target_link_options (AssimpJS PUBLIC -sALLOW_MEMORY_GROWTH=1 --no-heap-copy)
 	target_link_options (AssimpJS PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)
-	#target_link_options (AssimpJS PUBLIC -sEXCEPTION_CATCHING_ALLOWED=[])
 	
 	target_link_options (AssimpJS PUBLIC --bind)
 	
