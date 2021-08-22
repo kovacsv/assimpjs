@@ -23,6 +23,11 @@ endfunction ()
 
 add_subdirectory (assimp)
 if (${EMSCRIPTEN})
+	# TODO: This option enables exception handling in assimp sources, but it comes
+	# with a price. Given that webassemly doesn't support exceptions natively, this
+	# option simulates exception handling with javascript. This causes dramatic speed
+	# decrease, but with this option all of the importers work. The real solution is
+	# to wait while -fwasm-exceptions will be implemented in all major browsers.
 	#target_compile_options (assimp PUBLIC -fexceptions)
 endif ()
 
