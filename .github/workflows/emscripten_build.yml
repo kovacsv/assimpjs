@@ -36,12 +36,3 @@ jobs:
         cd ${{github.workspace}}
     - name: Build Emscripten
       run: ./em_build_win.bat ${{github.workspace}}/emsdk ${{matrix.configuration}}
-    - name: Update Package
-      if: ${{ matrix.configuration == 'Release' }}
-      run: |
-        npm install
-    - name: Run Test
-      if: ${{ matrix.configuration == 'Release' }}
-      run: |
-        $env:TEST_CONFIG="${{matrix.configuration}}"
-        npm run test

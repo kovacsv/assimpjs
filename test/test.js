@@ -29,13 +29,15 @@ function LoadModel (files)
 function IsError (files)
 {
 	let result = LoadModel (files);
-	return result === "error";
+	let resultJson = JSON.parse (result);
+	return resultJson.error !== undefined;
 }
 
 function IsSuccess (files)
 {
 	let result = LoadModel (files);
-	return result !== "error";
+	let resultJson = JSON.parse (result);
+	return resultJson.error === undefined;
 }
 
 describe ('Importer', function () {

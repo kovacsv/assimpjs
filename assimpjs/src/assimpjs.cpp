@@ -299,10 +299,15 @@ const aiScene* ImportModelByMainFile (Assimp::Importer& importer, const File* fi
 	return nullptr;
 }
 
+std::string CreateErrorJson (const std::string& errorMessage)
+{
+	return "{ \"error\" : \"" + errorMessage + "\" }";
+}
+
 std::string ImportModel (const FileList& fileList)
 {
 	if (fileList.FileCount () == 0) {
-		return "error";
+		return CreateErrorJson ("no_file_specified");
 	}
 
 	Assimp::Importer importer;
@@ -318,7 +323,7 @@ std::string ImportModel (const FileList& fileList)
 	}
 
 	if (scene == nullptr) {
-		return "error";
+		return CreateErrorJson ("model_import_failed");
 	}
 
 	Assimp::Exporter exporter;
@@ -328,7 +333,7 @@ std::string ImportModel (const FileList& fileList)
 
 	const std::vector<std::string>& resultFiles = exportIOSystem->GetResultFiles ();
 	if (resultFiles.size () != 1) {
-		return "error";
+		return CreateErrorJson ("model_json_conversion_failed");
 	}
 	return resultFiles[0];
 }
