@@ -21,6 +21,12 @@ endfunction ()
 
 # Assimp
 
+set (BUILD_SHARED_LIBS OFF CACHE BOOL "")
+set (ASSIMP_BUILD_TESTS OFF CACHE BOOL "")
+set (ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "")
+set (ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "")
+set (ASSIMP_BUILD_ASSJSON_EXPORTER ON CACHE BOOL "")
+
 add_subdirectory (assimp)
 if (${EMSCRIPTEN})
 	target_compile_options (assimp PUBLIC -fexceptions)
