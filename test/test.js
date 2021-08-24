@@ -130,7 +130,8 @@ it ('HMP', function () {
 });
 
 it ('IFC', function () {
-	assert (IsSuccess (['IFC/AC14-FZK-Haus.ifc']));
+	// IFC importer is disabled
+	assert (IsError (['IFC/AC14-FZK-Haus.ifc']));
 });
 
 it ('IRR', function () {

@@ -191,17 +191,14 @@ private:
 class ExportIOStream : public Assimp::IOStream
 {
 public:
-	ExportIOStream (std::vector<std::string>& resultFiles) :
-		resultFiles (resultFiles),
-		result ()
+	ExportIOStream (std::string& resultJson) :
+		resultJson (resultJson)
 	{
 	}
 
 	virtual ~ExportIOStream ()
 	{
-		if (!result.empty ()) {
-			resultFiles.push_back (result);
-		}
+
 	}
 
 	virtual size_t Read (void* pvBuffer, size_t pSize, size_t pCount) override
@@ -212,7 +209,7 @@ public:
 	virtual size_t Write (const void* pvBuffer, size_t pSize, size_t pCount) override
 	{
 		size_t memSize = pSize * pCount;
-		result.append ((char*) pvBuffer, memSize);
+		resultJson.append ((char*) pvBuffer, memSize);
 		return memSize;
 	}
 
@@ -237,15 +234,14 @@ public:
 	}
 
 private:
-	std::vector<std::string>& resultFiles;
-	std::string result;
+	std::string& resultJson;
 };
 
 class ExportIOSystem : public Assimp::IOSystem
 {
 public:
-	ExportIOSystem () :
-		resultFiles ()
+	ExportIOSystem (std::string& resultJson) :
+		resultJson (resultJson)
 	{
 	}
 
@@ -266,7 +262,10 @@ public:
 
 	virtual Assimp::IOStream* Open (const char* pFile, const char* pMode) override
 	{
-		return new ExportIOStream (resultFiles);
+		if (std::string (pFile) != "result.json") {
+			throw std::logic_error ("invalid export file");
+		}
+		return new ExportIOStream (resultJson);
 	}
 
 	virtual void Close (Assimp::IOStream* pFile) override
@@ -274,13 +273,8 @@ public:
 		delete pFile;
 	}
 
-	const std::vector<std::string>& GetResultFiles () const
-	{
-		return resultFiles;
-	}
-
 private:
-	std::vector<std::string> resultFiles;
+	std::string& resultJson;
 };
 
 const aiScene* ImportModelByMainFile (Assimp::Importer& importer, const File* file)
@@ -326,16 +320,17 @@ std::string ImportModel (const FileList& fileList)
 		return CreateErrorJson ("model_import_failed");
 	}
 
+	std::string resultJson;
+
 	Assimp::Exporter exporter;
-	ExportIOSystem* exportIOSystem = new ExportIOSystem ();
+	ExportIOSystem* exportIOSystem = new ExportIOSystem (resultJson);
 	exporter.SetIOHandler (exportIOSystem);
 	exporter.Export (scene, "assjson", "result.json");
 
-	const std::vector<std::string>& resultFiles = exportIOSystem->GetResultFiles ();
-	if (resultFiles.size () != 1) {
+	if (resultJson.empty ()) {
 		return CreateErrorJson ("model_json_conversion_failed");
 	}
-	return resultFiles[0];
+	return resultJson;
 }
 
 #ifdef EMSCRIPTEN

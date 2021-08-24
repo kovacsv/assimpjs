@@ -45,6 +45,9 @@ set (ASSIMP_BUILD_IRRMESH_IMPORTER OFF CACHE BOOL "")
 # doesn't work
 set (ASSIMP_BUILD_TERRAGEN_IMPORTER OFF CACHE BOOL "")
 
+# this dramatically decreases the wasm file size
+set (ASSIMP_BUILD_IFC_IMPORTER OFF CACHE BOOL "")
+
 add_subdirectory (assimp)
 
 if (${EMSCRIPTEN})
