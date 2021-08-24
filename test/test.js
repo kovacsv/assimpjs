@@ -134,25 +134,20 @@ it ('IFC', function () {
 });
 
 it ('IRR', function () {
-	// TODO: XML validation failed
+	// IRR importer is disabled
 	assert (IsError (['IRR/box.irr']));
 });
 
 it ('IRRMesh', function () {
-	// TODO: XML validation failed
+	// IRRMESH importer is disabled
 	assert (IsError (['IRRMesh/spider.irrmesh']));
 });
 
-it ('JT', function () {
-	// TODO: no importer found
-	assert (IsError (['JT/conrod.jt']));
-});
-
 it ('LWO', function () {
-	// TODO
 	assert (IsSuccess (['LWO/LWO2/sphere_with_mat_gloss_10pc.lwo']));
-	assert (IsError (['LWO/LWOB/sphere_with_mat_gloss_10pc.lwo']));
 	assert (IsSuccess (['LWO/LXOB_Modo/sphereWithVertMap.lxo']));
+
+	assert (IsError (['LWO/LWOB/sphere_with_mat_gloss_10pc.lwo']));
 });
 
 it ('LWS', function () {
@@ -160,7 +155,7 @@ it ('LWS', function () {
 });
 
 it ('M3D', function () {
-	// TODO: M3D importer is disable because of a crash
+	// M3D importer is disabled
 	assert (IsError (['M3D/cube_usemtl.m3d']));
 });
 
@@ -219,8 +214,8 @@ it ('Q3D', function () {
 });
 
 it ('RAW', function () {
-	// TODO: memory error
-	// assert (IsSuccess (['RAW/WithColor.raw']));
+	// RAW importer is disabled
+	assert (IsError (['RAW/WithColor.raw']));
 });
 
 it ('SIB', function () {
@@ -237,13 +232,8 @@ it ('STL', function () {
 });
 
 it ('TER', function () {
-	// TODO: timeout
-	// assert (IsSuccess (['TER/RealisticTerrain.ter']));
-});
-
-it ('WRL', function () {
-	// TODO: tried to load by blender importer
-	assert (IsError (['WRL/Wuson.wrl']));
+	// TER importer is disabled
+	assert (IsError (['TER/RealisticTerrain.ter']));
 });
 
 it ('X', function () {
@@ -253,24 +243,12 @@ it ('X', function () {
 });
 
 it ('X3D', function () {
-	// TODO: no importer found
+	// X3D importer is disabled
 	assert (IsError (['X3D/ComputerKeyboard.x3d']));
 });
 
 it ('XGL', function () {
 	assert (IsSuccess (['XGL/cubes_with_alpha.zgl']));
-});
-
-it ('Speed', function () {
-	assert (IsSuccess (['OBJ/cube_usemtl.obj', 'OBJ/cube_usemtl.mtl']));
-	assert (IsSuccess (['OBJ/cube_usemtl.mtl', 'OBJ/cube_usemtl.obj']));
-	assert (IsSuccess (['OBJ/spider.obj']));
-	assert (IsSuccess (['OBJ/cube_usemtl.obj', 'OBJ/cube_usemtl.mtl']));
-	assert (IsSuccess (['3DS/test1.3ds']));
-	assert (IsSuccess (['3DS/fels.3ds']));
-	assert (IsSuccess (['3DS/cubes_with_alpha.3DS']));
-	assert (IsSuccess (['3DS/cube_with_specular_texture.3DS']));
-	assert (IsSuccess (['3DS/cube_with_diffuse_texture.3DS']));
 });
 
 });

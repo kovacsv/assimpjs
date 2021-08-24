@@ -38,36 +38,20 @@ int main (int argc, const char* argv[])
 		folderPath = folderPath.substr (0, lastSeparator);
 	}
 
-	{
-		FileList fileList;
+	FileList fileList;
 
-		if (argc == 2) {
-			File mainFile = GetFile (argv[1]);
-			fileList.AddFile (mainFile.path, mainFile.content);
-		} else {
-			File mainFile = GetTestFile (folderPath, "cube_with_materials.obj");
-			File mtlFile = GetTestFile (folderPath, "cube_with_materials.mtl");
-
-			fileList.AddFile (mainFile.path, mainFile.content);
-			fileList.AddFile (mtlFile.path, mtlFile.content);
-		}
-
-		ImportModel (fileList);
-	}
-
-	{
-		FileList fileList;
-
-		File mainFile = GetFile ("C:\\Users\\kovacsv\\GitRepos\\assimp\\test\\models\\STL\\Spider_binary.stl");
+	if (argc == 2) {
+		File mainFile = GetFile (argv[1]);
 		fileList.AddFile (mainFile.path, mainFile.content);
+	} else {
+		File mainFile = GetTestFile (folderPath, "cube_with_materials.obj");
+		File mtlFile = GetTestFile (folderPath, "cube_with_materials.mtl");
 
-		//File mainFile = GetTestFile (folderPath, "cube_with_materials.obj");
-		//File mtlFile = GetTestFile (folderPath, "cube_with_materials.mtl");
-		//
-		//fileList.AddFile (mainFile.path, mainFile.content);
-		//fileList.AddFile (mtlFile.path, mtlFile.content);
-
-		ImportModel (fileList);
+		fileList.AddFile (mainFile.path, mainFile.content);
+		fileList.AddFile (mtlFile.path, mtlFile.content);
 	}
+
+	ImportModel (fileList);
+
 	return 0;
 }
