@@ -8,6 +8,45 @@
     <title>AssimpJS Demo</title>
     <script type="text/javascript" src="assimpjs.js"></script>
     
+	<style>
+		html, body
+		{
+			font-family: Arial;
+		}
+		
+		a
+		{
+			color: #297fff;
+			text-decoration: none;
+		}
+		
+		a:hover
+		{
+			text-decoration: underline;
+		}
+		
+		#main
+		{
+			margin: 1.0em;
+		}
+		
+		#info
+		{
+			margin: 1.0em 0.0em;
+		}
+		
+		#dragdrop
+		{
+			color: #888888;
+			background: #f0f0f0;
+			font-size: 2.0em;
+			text-align: center;
+			padding: 2.0em;
+			border: 3px dashed #c0c0c0;
+			border-radius: 0.5em;
+		}
+	</style>
+	
     <script type='text/javascript'>
 		function GetFileBuffer (file)
 		{
@@ -42,10 +81,11 @@
 		}
 	
         window.onload = function () {
+			let dragDropDiv = document.getElementById ('dragdrop');
 			let resultDiv = document.getElementById ('result');
-			resultDiv.innerHTML = 'Loading assimp.js...';
+			dragDropDiv.innerHTML = 'Loading assimp.js...';
 			assimpjs ().then (function (ajs) {
-				resultDiv.innerHTML = 'Drag&Drop your models in this window.';
+				dragDropDiv.innerHTML = 'Drag&Drop your models here.';
 				window.addEventListener ('dragstart', (ev) => {
 					ev.preventDefault ();
 				}, false);
@@ -58,43 +98,27 @@
 					ev.stopPropagation ();
 					ev.preventDefault ();
 					if (ev.dataTransfer.files.length > 0) {
-						resultDiv.innerHTML = 'Loading model...';
+						dragDropDiv.innerHTML = 'Loading model...';
+						resultDiv.innerHTML = '';
 						LoadModel (ajs, ev.dataTransfer.files, (result) => {
+							dragDropDiv.innerHTML = 'Drag&Drop your models here.';
 							resultDiv.innerHTML = result;
 						});
 					}
 				}, false);
 			});
-    <!-- // fetch the files to import (make sure that the main file is the first) -->
-    <!-- let files = [ -->
-        <!-- 'testfiles/cube_with_materials.obj', -->
-        <!-- 'testfiles/cube_with_materials.mtl' -->
-    <!-- ]; -->
-    <!-- Promise.all (files.map ((file) => fetch (file))).then ((responses) => { -->
-        <!-- return Promise.all (responses.map ((res) => res.arrayBuffer ())); -->
-    <!-- }).then ((arrayBuffers) => { -->
-        <!-- // create new file list object -->
-        <!-- let fileList = new ajs.FileList (); -->
-        <!-- for (let i = 0; i < files.length; i++) { -->
-            <!-- fileList.AddFile (files[i], new Uint8Array (arrayBuffers[i])); -->
-        <!-- } -->
-        
-        <!-- // import model -->
-        <!-- let result = ajs.ImportModel (fileList); -->
-        
-        <!-- // parse the result json -->
-        <!-- let resultJson = JSON.parse (result); -->
-        
-        <!-- resultDiv.innerHTML = JSON.stringify (resultJson, null, 4); -->
-    <!-- }); -->
-<!-- }); -->
-
         };
     </script>
 </head>
 
 <body>
-    <pre id="result"></pre>
+	<div id="main">
+		<div id="info">
+			This is a demonstration of the <a href="https://github.com/kovacsv/assimpjs">assimpj</a> library, which is a javascript interface for the <a href="https://github.com/assimp/assimp">assimp</a> library. The code is compiled to javascript, and runs entirely in the browser. Almost every import file format works out of the box, you just have to drag&drop files in this browser window to see the generated assimp json.
+		</div>
+		<div id="dragdrop"></div>
+		<pre id="result"></pre>
+	</div>
 </body>
 
 </html>
