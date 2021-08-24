@@ -30,7 +30,7 @@ static File GetTestFile (const std::string& folderPath, const std::string& fileN
 	return File (fileName, content);
 }
 
-int main (int /*argc*/, const char* argv[])
+int main (int argc, const char* argv[])
 {
 	std::string folderPath = argv[0];
 	size_t lastSeparator = folderPath.find_last_of ('\\');
@@ -38,17 +38,36 @@ int main (int /*argc*/, const char* argv[])
 		folderPath = folderPath.substr (0, lastSeparator);
 	}
 
-	FileList fileList;
-	
-	//File mainFile = GetFile ("C:\\Users\\kovacsv\\GitRepos\\assimpjs\\assimp\\test\\models\\DXF\\PinkEggFromLW.dxf");
-	//fileList.AddFile (mainFile.path, mainFile.content);
-	
-	File mainFile = GetTestFile (folderPath, "cube_with_materials.obj");
-	File mtlFile = GetTestFile (folderPath, "cube_with_materials.mtl");
+	{
+		FileList fileList;
 
-	fileList.AddFile (mainFile.path, mainFile.content);
-	fileList.AddFile (mtlFile.path, mtlFile.content);
+		if (argc == 2) {
+			File mainFile = GetFile (argv[1]);
+			fileList.AddFile (mainFile.path, mainFile.content);
+		} else {
+			File mainFile = GetTestFile (folderPath, "cube_with_materials.obj");
+			File mtlFile = GetTestFile (folderPath, "cube_with_materials.mtl");
 
-	ImportModel (fileList);
+			fileList.AddFile (mainFile.path, mainFile.content);
+			fileList.AddFile (mtlFile.path, mtlFile.content);
+		}
+
+		ImportModel (fileList);
+	}
+
+	{
+		FileList fileList;
+
+		File mainFile = GetFile ("C:\\Users\\kovacsv\\GitRepos\\assimp\\test\\models\\STL\\Spider_binary.stl");
+		fileList.AddFile (mainFile.path, mainFile.content);
+
+		//File mainFile = GetTestFile (folderPath, "cube_with_materials.obj");
+		//File mtlFile = GetTestFile (folderPath, "cube_with_materials.mtl");
+		//
+		//fileList.AddFile (mainFile.path, mainFile.content);
+		//fileList.AddFile (mtlFile.path, mtlFile.content);
+
+		ImportModel (fileList);
+	}
 	return 0;
 }

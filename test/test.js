@@ -160,7 +160,8 @@ it ('LWS', function () {
 });
 
 it ('M3D', function () {
-	assert (IsSuccess (['M3D/cube_usemtl.m3d']));
+	// TODO: M3D importer is disable because of a crash
+	assert (IsError (['M3D/cube_usemtl.m3d']));
 });
 
 it ('MD2', function () {

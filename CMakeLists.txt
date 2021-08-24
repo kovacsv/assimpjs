@@ -27,10 +27,14 @@ set (ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "")
 set (ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "")
 set (ASSIMP_BUILD_ASSJSON_EXPORTER ON CACHE BOOL "")
 
+# undefined behaviour because of alignment issues, crashes and memory leaks
+# https://github.com/assimp/assimp/pull/4044
+set (ASSIMP_BUILD_M3D_IMPORTER OFF CACHE BOOL "")
+
 add_subdirectory (assimp)
+
 if (${EMSCRIPTEN})
 	target_compile_options (assimp PUBLIC -fexceptions)
-	target_link_options (assimp PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)	
 endif ()
 
 # AssimpJS
@@ -52,6 +56,9 @@ if (${EMSCRIPTEN})
 	target_link_options (AssimpJS PUBLIC -sEXPORT_NAME='assimpjs')
 	target_link_options (AssimpJS PUBLIC -sALLOW_MEMORY_GROWTH=1 --no-heap-copy)
 	target_link_options (AssimpJS PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)
+	
+	# to check for memory errors
+	# target_link_options (AssimpJS PUBLIC -sASSERTIONS=1 -sSAFE_HEAP=1 -sWARN_UNALIGNED=1)
 	
 	target_link_options (AssimpJS PUBLIC --bind)
 	
@@ -90,4 +97,3 @@ else ()
 	target_link_libraries (AssimpJSExample AssimpJS)
 	set_target_properties (AssimpJSExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 endif ()
-
