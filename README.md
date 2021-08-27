@@ -93,7 +93,7 @@ You have to install the following software:
 
 ### 2. Install Emscripten SDK
 
-You can find detailed instruction on [Emscripten Download and install](https://emscripten.org/docs/getting_started/downloads.html) page. You have to use the following commands to set up the environment for VisualScriptEngineWeb:
+You can find detailed instruction on [Emscripten Download and install](https://emscripten.org/docs/getting_started/downloads.html) page. You have to use the following commands to set up the environment:
 
 ```
 git clone https://github.com/emscripten-core/emsdk.git
