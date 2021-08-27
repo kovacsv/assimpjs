@@ -107,13 +107,13 @@ emsdk activate mingw-4.6.2-32bit
 
 ### 3. Generate the Visual Studio Project (Optional)
 
-You can create the project with CMake, and build it with Visual Studio. This step is optional. The Visual Studio project is useful if you would like to debug the functionalities, but it is not necessary for building the web application.
+You can create the project with CMake, and build it with Visual Studio. This step is optional. The Visual Studio project is useful if you would like to debug the functionalities, but it is not necessary for building the wasm library.
 
 ```
 cmake -B build -G "Visual Studio 16 2019"
 ```
 
-### 4. Generate the Web Application
+### 4. Generate the WASM library
 
 The easiest way is to run the `em_build_win.bat` file from the root directory. It needs two command line parameters:
 - The Emscripten SDK folder (e.g. "C:\Emscripten\emsdk").
