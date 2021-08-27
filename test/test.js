@@ -65,6 +65,7 @@ it ('3DS', function () {
 	assert (IsSuccess (['3DS/cubes_with_alpha.3DS']));
 	assert (IsSuccess (['3DS/cube_with_specular_texture.3DS']));
 	assert (IsSuccess (['3DS/cube_with_diffuse_texture.3DS']));
+	assert (IsSuccess (['3DS/RotatingCube.3DS']));
 });
 
 it ('3MF', function () {
@@ -73,10 +74,20 @@ it ('3MF', function () {
 
 it ('AC', function () {
 	assert (IsSuccess (['AC/SphereWithLight.ac']));
+	assert (IsSuccess (['AC/SphereWithLight_UTF8BOM.ac']));
 });
 
 it ('AMF', function () {
 	assert (IsSuccess (['AMF/test_with_mat.amf']));
+	assert (IsSuccess (['AMF/test1.amf']));
+	assert (IsSuccess (['AMF/test2.amf']));
+	assert (IsSuccess (['AMF/test3.amf']));
+	assert (IsSuccess (['AMF/test4.amf']));
+	assert (IsSuccess (['AMF/test5.amf']));
+	assert (IsSuccess (['AMF/test6.amf']));
+	assert (IsSuccess (['AMF/test7.amf']));
+	assert (IsSuccess (['AMF/test8.amf']));
+	assert (IsSuccess (['AMF/test9.amf']));
 });
 
 it ('ASE', function () {
