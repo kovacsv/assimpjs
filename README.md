@@ -110,10 +110,7 @@ emsdk activate mingw-4.6.2-32bit
 You can create the project with CMake, and build it with Visual Studio. This step is optional. The Visual Studio project is useful if you would like to debug the functionalities, but it is not necessary for building the web application.
 
 ```
-mkdir Build
-cd Build
-cmake -G "Visual Studio 16 2019" ..
-cd ..
+cmake -B build -G "Visual Studio 16 2019"
 ```
 
 ### 4. Generate the Web Application
