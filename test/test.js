@@ -2,7 +2,7 @@ var fs = require ('fs');
 var path = require ('path');
 var assert = require ('assert');
 
-var config = 'Debug'
+var config = 'Release'
 if (process.env.TEST_CONFIG !== undefined) {
 	config = process.env.TEST_CONFIG;
 }
@@ -156,12 +156,15 @@ it ('FBX', function () {
 });
 
 it ('glTF', function () {
-	// TODO: wrong file
-	assert (IsError (['glTF/BoxTextured-glTF-Binary/BoxTextured.glb']));
+	assert (IsSuccess (['glTF/BoxTextured-glTF/BoxTextured.gltf', 'glTF/BoxTextured-glTF/BoxTextured.bin']));
+	assert (IsSuccess (['glTF/BoxTextured-glTF-Embedded/BoxTextured.gltf']));
+	assert (IsSuccess (['glTF/CesiumMilkTruck/CesiumMilkTruck.gltf', 'glTF/CesiumMilkTruck/CesiumMilkTruck.bin']));
 });
 
 it ('glTF2', function () {
+	assert (IsSuccess (['glTF2/BoxTextured-glTF/BoxTextured.gltf', 'glTF2/BoxTextured-glTF/BoxTextured0.bin']));
 	assert (IsSuccess (['glTF2/BoxTextured-glTF-Binary/BoxTextured.glb']));
+	assert (IsSuccess (['glTF2/2CylinderEngine-glTF-Binary/2CylinderEngine.glb']));
 });
 
 it ('HMP', function () {

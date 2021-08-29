@@ -16,20 +16,6 @@ static File GetFile (const std::string& filePath)
 	return File (filePath, content);
 }
 
-static File GetTestFile (const std::string& folderPath, const std::string& fileName)
-{
-	std::string filePath = folderPath + "\\testfiles\\" + fileName;
-	Assimp::DefaultIOSystem system;
-	Assimp::IOStream* stream = system.Open (filePath.c_str (), "rb");
-	if (stream == nullptr) {
-		return File ();
-	}
-	size_t fileSize = stream->FileSize ();
-	std::vector<std::uint8_t> content (fileSize);
-	stream->Read (&content[0], 1, fileSize);
-	return File (fileName, content);
-}
-
 int main (int argc, const char* argv[])
 {
 	std::string folderPath = argv[0];
@@ -38,20 +24,16 @@ int main (int argc, const char* argv[])
 		folderPath = folderPath.substr (0, lastSeparator);
 	}
 
+	if (argc < 2) {
+		return 1;
+	}
+
 	FileList fileList;
-
-	if (argc == 2) {
-		File mainFile = GetFile (argv[1]);
-		fileList.AddFile (mainFile.path, mainFile.content);
-	} else {
-		File mainFile = GetTestFile (folderPath, "cube_with_materials.obj");
-		File mtlFile = GetTestFile (folderPath, "cube_with_materials.mtl");
-
-		fileList.AddFile (mainFile.path, mainFile.content);
-		fileList.AddFile (mtlFile.path, mtlFile.content);
+	for (size_t i = 1; i < argc; i++) {
+		File file = GetFile (argv[i]);
+		fileList.AddFile (file.path, file.content);
 	}
 
 	ImportModel (fileList);
-
 	return 0;
 }

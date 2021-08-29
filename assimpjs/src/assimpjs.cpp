@@ -13,12 +13,14 @@
 
 static std::string GetFileName (const std::string& path)
 {
-	// TODO: windows separator
 	size_t lastSeparator = path.find_last_of ('/');
+	if (lastSeparator == std::wstring::npos) {
+		lastSeparator = path.find_last_of ('\\');
+	}
 	if (lastSeparator == std::wstring::npos) {
 		return path;
 	}
-	return path.substr (lastSeparator, path.length () - lastSeparator);
+	return path.substr (lastSeparator + 1, path.length () - lastSeparator - 1);
 }
 
 File::File () :
@@ -61,9 +63,10 @@ const File* FileList::GetFile (size_t index) const
 const File* FileList::GetFile (const std::string& path) const
 {
 	// TODO: case insensitive
+	std::string fileName = GetFileName (path);
 	for (const File& file : files) {
-		std::string fileName = GetFileName (file.path);
-		if (file.path == path) {
+		std::string currFileName = GetFileName (file.path);
+		if (currFileName == fileName) {
 			return &file;
 		}
 	}
@@ -167,7 +170,11 @@ public:
 
 	virtual char getOsSeparator () const override
 	{
+#ifndef _WIN32
 		return '/';
+#else
+		return '\\';
+#endif
 	}
 
 	virtual Assimp::IOStream* Open (const char* pFile, const char* pMode) override
@@ -257,7 +264,11 @@ public:
 
 	virtual char getOsSeparator () const override
 	{
+#ifndef _WIN32
 		return '/';
+#else
+		return '\\';
+#endif
 	}
 
 	virtual Assimp::IOStream* Open (const char* pFile, const char* pMode) override
