@@ -26,7 +26,12 @@ function LoadModel (ajs, files, onLoad)
 			fileList.AddFile (files[i].name, new Uint8Array (arrayBuffers[i]));
 		}
 		let result = ajs.ImportModel (fileList);
-		onLoad (result);
+		resultJson = JSON.parse (result);
+		onLoad (resultJson);
+	}).catch (() => {
+		onLoad ({
+			error: 'failed_to_load_file'
+		});
 	});
 }
 
@@ -59,8 +64,7 @@ window.onload = function () {
 				resultDiv.innerHTML = '';
 				LoadModel (ajs, ev.dataTransfer.files, (result) => {
 					dragDropDiv.innerHTML = texts.dragDrop;
-					let resultJson = JSON.parse (result);
-					let formatter = new JSONFormatter (resultJson, 1, {
+					let formatter = new JSONFormatter (result, 1, {
 						'theme' : 'dark'
 					});
 					resultDiv.style.display = 'block';
