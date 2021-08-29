@@ -4,7 +4,7 @@ call tools\build_wasm_win_release.bat || goto :error
 echo Build Succeeded.
 
 call set TEST_CONFIG=Release
-rem call npm run test || goto :error
+call npm run test || goto :error
 
 mkdir dist
 copy build_wasm\Release\assimpjs.js dist\assimpjs.js || goto :error
