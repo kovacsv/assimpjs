@@ -92,6 +92,9 @@ it ('AMF', function () {
 
 it ('ASE', function () {
 	assert (IsSuccess (['ASE/ThreeCubesGreen.ASE']));
+	assert (IsSuccess (['ASE/RotatingCube.ASE']));
+	assert (IsSuccess (['ASE/CameraRollAnim.ase']));
+	assert (IsSuccess (['ASE/CameraRollAnimWithChildObject.ase']));
 });
 
 it ('B3D', function () {
@@ -100,10 +103,13 @@ it ('B3D', function () {
 
 it ('BLEND', function () {
 	assert (IsSuccess (['BLEND/box.blend']));
+	assert (IsSuccess (['BLEND/AreaLight_269.blend']));
 });
 
 it ('BVH', function () {
 	assert (IsSuccess (['BVH/Boxing_Toes.bvh']));
+	assert (IsSuccess (['BVH/01_01.bvh']));
+	assert (IsSuccess (['BVH/01_03.bvh']));
 });
 
 it ('COB', function () {
