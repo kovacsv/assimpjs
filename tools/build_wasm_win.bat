@@ -1,4 +1,4 @@
-pushd %~dp0
+pushd %~dp0\..
 
 call emsdk\emsdk_env.bat
 call emcmake cmake -B build_wasm -G "Unix Makefiles" -DEMSCRIPTEN=1 -DCMAKE_MAKE_PROGRAM=mingw32-make -DCMAKE_BUILD_TYPE=%1 . || goto :error

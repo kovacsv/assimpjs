@@ -1,4 +1,4 @@
-pushd %~dp0
+pushd %~dp0\..
 
 call git clone https://github.com/emscripten-core/emsdk.git
 call cd emsdk

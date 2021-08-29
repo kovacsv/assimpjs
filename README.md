@@ -95,7 +95,7 @@ Install [CMake](https://cmake.org) (3.6 minimum version is needed). Make sure th
 Run the Emscripten setup script.
 
 ```
-build_setup_emscripten_win.bat
+tools\build_setup_emscripten_win.bat
 ```
 
 ### 3. Compile the WASM library
@@ -103,7 +103,7 @@ build_setup_emscripten_win.bat
 Run the release build script.
 
 ```
-build_wasm_win_release.bat
+tools\build_wasm_win_release.bat
 ```
 
 ### 4. Build the native project (optional)
