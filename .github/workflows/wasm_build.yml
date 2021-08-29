@@ -25,7 +25,7 @@ jobs:
       with:
         node-version: 16.x
     - name: Get Emscripten
-      run: ./tools/build_setup_emscripten_win.bat
+      run: ./tools/setup_emscripten_win.bat
     - name: Build WASM
       run: ./tools/build_wasm_win.bat ${{matrix.configuration}}
     - name: Update Package
