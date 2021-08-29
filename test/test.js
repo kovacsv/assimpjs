@@ -114,11 +114,25 @@ it ('BVH', function () {
 
 it ('COB', function () {
 	assert (IsSuccess (['COB/molecule.cob']));
+	assert (IsSuccess (['COB/dwarf.cob']));
 });
 
 it ('COLLADA', function () {
 	assert (IsSuccess (['COLLADA/duck.dae']));
 	assert (IsSuccess (['COLLADA/duck.zae']));
+	assert (IsSuccess (['COLLADA/COLLADA.dae']));
+	assert (IsSuccess (['COLLADA/COLLADA_triangulate.dae']));
+	assert (IsSuccess (['COLLADA/ConcavePolygon.dae']));
+	assert (IsSuccess (['COLLADA/cube_tristrips.dae']));
+	assert (IsSuccess (['COLLADA/cube_emptyTags.dae']));
+	assert (IsSuccess (['COLLADA/cube_triangulate.dae']));
+	assert (IsSuccess (['COLLADA/earthCylindrical.DAE']));
+	assert (IsSuccess (['COLLADA/human.zae']));
+	assert (IsSuccess (['COLLADA/lights.dae']));
+	assert (IsSuccess (['COLLADA/sphere.dae']));
+	assert (IsSuccess (['COLLADA/sphere_triangulate.dae']));
+	assert (IsSuccess (['COLLADA/teapot_instancenodes.DAE']));
+	assert (IsSuccess (['COLLADA/teapots.DAE']));
 });
 
 it ('CSM', function () {
@@ -127,10 +141,18 @@ it ('CSM', function () {
 
 it ('DXF', function () {
 	assert (IsSuccess (['DXF/PinkEggFromLW.dxf']));
+	assert (IsSuccess (['DXF/wuson.dxf']));
 });
 
 it ('FBX', function () {
+	assert (IsSuccess (['FBX/box.fbx']));
+	assert (IsSuccess (['FBX/cubes_nonames.fbx']));
 	assert (IsSuccess (['FBX/cubes_with_names.fbx']));
+	assert (IsSuccess (['FBX/global_settings.fbx']));
+	assert (IsSuccess (['FBX/spider.fbx']));
+	assert (IsSuccess (['FBX/phong_cube.fbx']));
+	assert (IsSuccess (['FBX/embedded_ascii/box.FBX']));
+	assert (IsSuccess (['FBX/embedded_ascii/box_embedded_texture_fragmented.fbx']));
 });
 
 it ('glTF', function () {
