@@ -78,11 +78,6 @@ if (${EMSCRIPTEN})
 	# target_link_options (AssimpJS PUBLIC -sASSERTIONS=1 -sSAFE_HEAP=1 -sWARN_UNALIGNED=1)
 	
 	target_link_options (AssimpJS PUBLIC --bind)
-	
-	get_filename_component (AssimpJSExamplesFolderAbsolute "${CMAKE_CURRENT_LIST_DIR}/examples" ABSOLUTE)
-	add_custom_command (TARGET AssimpJS POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory ${AssimpJSExamplesFolderAbsolute} $<TARGET_FILE_DIR:AssimpJS>
-	)
 else ()
 	add_library (AssimpJS ${AssimpJSSourceFiles})
 endif ()
@@ -93,11 +88,6 @@ set_target_properties(AssimpJS PROPERTIES OUTPUT_NAME assimpjs)
 set_target_properties (AssimpJS PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 
 # AssimpJSTest
-
-get_filename_component (AssimpJSTestFilesFolderAbsolute "${CMAKE_CURRENT_LIST_DIR}/assimpjs/testfiles" ABSOLUTE)
-add_custom_command (TARGET AssimpJS POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_directory ${AssimpJSTestFilesFolderAbsolute} $<TARGET_FILE_DIR:AssimpJS>/testfiles
-)
 
 if (${EMSCRIPTEN})
 else ()

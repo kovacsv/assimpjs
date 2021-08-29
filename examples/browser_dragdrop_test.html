@@ -6,47 +6,8 @@
     <meta name="viewport" content="width=device-width, user-scalable=no">
 
     <title>AssimpJS Demo</title>
-    <script type="text/javascript" src="assimpjs.js"></script>
+    <script type="text/javascript" src="../dist/assimpjs.js"></script>
     
-	<style>
-		html, body
-		{
-			font-family: Arial;
-		}
-		
-		a
-		{
-			color: #297fff;
-			text-decoration: none;
-		}
-		
-		a:hover
-		{
-			text-decoration: underline;
-		}
-		
-		#main
-		{
-			margin: 1.0em;
-		}
-		
-		#info
-		{
-			margin: 1.0em 0.0em;
-		}
-		
-		#dragdrop
-		{
-			color: #888888;
-			background: #f0f0f0;
-			font-size: 2.0em;
-			text-align: center;
-			padding: 2.0em;
-			border: 3px dashed #c0c0c0;
-			border-radius: 0.5em;
-		}
-	</style>
-	
     <script type='text/javascript'>
 		function GetFileBuffer (file)
 		{
@@ -81,11 +42,10 @@
 		}
 	
         window.onload = function () {
-			let dragDropDiv = document.getElementById ('dragdrop');
 			let resultDiv = document.getElementById ('result');
-			dragDropDiv.innerHTML = 'Loading assimp.js...';
+			resultDiv.innerHTML = 'Loading assimp.js...';
 			assimpjs ().then (function (ajs) {
-				dragDropDiv.innerHTML = 'Drag&Drop your models here.';
+				resultDiv.innerHTML = 'Drag&Drop your models here.';
 				window.addEventListener ('dragstart', (ev) => {
 					ev.preventDefault ();
 				}, false);
@@ -98,10 +58,8 @@
 					ev.stopPropagation ();
 					ev.preventDefault ();
 					if (ev.dataTransfer.files.length > 0) {
-						dragDropDiv.innerHTML = 'Loading model...';
-						resultDiv.innerHTML = '';
+						resultDiv.innerHTML = 'Loading model...';
 						LoadModel (ajs, ev.dataTransfer.files, (result) => {
-							dragDropDiv.innerHTML = 'Drag&Drop your models here.';
 							resultDiv.innerHTML = result;
 						});
 					}
@@ -112,13 +70,7 @@
 </head>
 
 <body>
-	<div id="main">
-		<div id="info">
-			This is a demonstration of the <a href="https://github.com/kovacsv/assimpjs">assimpj</a> library, which is a javascript interface for the <a href="https://github.com/assimp/assimp">assimp</a> library. The code is compiled to javascript, and runs entirely in the browser. Almost every import file format works out of the box, you just have to drag&drop files in this browser window to see the generated assimp json.
-		</div>
-		<div id="dragdrop"></div>
-		<pre id="result"></pre>
-	</div>
+	<pre id="result"></pre>
 </body>
 
 </html>

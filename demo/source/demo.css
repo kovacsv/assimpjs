@@ -1,0 +1,42 @@
+html, body
+{
+	color: #fafafa;
+	background: #222222;
+	font-family: Arial;
+}
+
+a
+{
+	color: #297fff;
+	text-decoration: none;
+}
+
+a:hover
+{
+	text-decoration: underline;
+}
+
+#main
+{
+	width: 80%;
+	margin: 1.0em auto;
+}
+
+#dragdrop
+{
+	color: inherit;
+	background: #282828;
+	font-size: 1.6em;
+	text-align: center;
+	padding: 1.0em;
+	border: 1px solid #444444;
+	border-radius: 0.2em;
+	margin-bottom: 0.5em;
+}
+
+#result
+{
+	padding: 1.0em;
+	border: 1px solid #444444;
+	border-radius: 0.2em;
+}

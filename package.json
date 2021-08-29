@@ -9,6 +9,7 @@
 		"mocha": "^8.3.2"
 	},
 	"scripts": {
+		"start": "http-server",
 		"test": "mocha test --timeout 30000"
 	},
 	"dependencies": {}
