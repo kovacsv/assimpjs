@@ -1,6 +1,6 @@
 pushd %~dp0
 
-call em_build_win.bat %1 Release || goto :error
+call wasm_build_win_release.bat || goto :error
 echo Build Succeeded.
 
 call set TEST_CONFIG=Release

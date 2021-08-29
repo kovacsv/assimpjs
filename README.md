@@ -82,14 +82,11 @@ assimpjs.then ((ajs) => {
 });
 ```
 
-## How to build?
-
-Build instructions are set up for windows, but they are basically the same for all platforms.
+## How to build on Windows?
 
 ### 1. Install Prerequisites
 
-You have to install the following software:
-- [CMake](https://cmake.org) (3.6 minimum version is needed).
+Install [CMake](https://cmake.org) (3.6 minimum version is needed). Make sure that the cmake executable is in the PATH.
 
 ### 2. Install Emscripten SDK
 
@@ -98,28 +95,39 @@ You can find detailed instruction on [Emscripten Download and install](https://e
 ```
 git clone https://github.com/emscripten-core/emsdk.git
 cd emsdk
-git pull
 emsdk install latest
 emsdk activate latest
 emsdk install mingw-4.6.2-32bit
 emsdk activate mingw-4.6.2-32bit
+cd ..
 ```
 
-### 3. Generate the Visual Studio Project (Optional)
+### 3. Compile the WASM library
 
-You can create the project with CMake, and build it with Visual Studio. This step is optional. The Visual Studio project is useful if you would like to debug the functionalities, but it is not necessary for building the wasm library.
+#### With a predefined script
 
-```
-cmake -B build -G "Visual Studio 16 2019"
-```
-
-### 4. Generate the WASM library
-
-The easiest way is to run the `em_build_win.bat` file from the root directory. It needs two command line parameters:
-- The Emscripten SDK folder (e.g. "C:\Emscripten\emsdk").
-- The build configuration type (Debug or Release).
+The easiest way to build is to simply run the `wasm_build_win_release.bat` script.
 
 ```
-em_build_win.bat C:\Emscripten\emsdk Release
+wasm_build_win_release.bat
 ```
 
+#### Manually
+
+Set up the emscripten environment:
+
+```
+emsdk\emsdk_env.bat
+```
+
+Generate makefile project with emcmake:
+
+```
+emcmake cmake -B build_wasm -G "Unix Makefiles" -DEMSCRIPTEN=1 -DCMAKE_MAKE_PROGRAM=mingw32-make -DCMAKE_BUILD_TYPE=Release .
+```
+
+Build the project:
+
+```
+emmake mingw32-make -C build_wasm
+```

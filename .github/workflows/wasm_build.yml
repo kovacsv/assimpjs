@@ -1,4 +1,4 @@
-name: Emscripten Build
+name: WASM Build
 
 on:
   push:
@@ -28,14 +28,13 @@ jobs:
       run: |
         git clone https://github.com/emscripten-core/emsdk.git
         cd ${{github.workspace}}/emsdk
-        git pull
         ./emsdk.bat install latest
         ./emsdk.bat activate latest
         ./emsdk.bat install mingw-4.6.2-32bit
         ./emsdk.bat activate mingw-4.6.2-32bit
         cd ${{github.workspace}}
-    - name: Build Emscripten
-      run: ./em_build_win.bat ${{github.workspace}}/emsdk ${{matrix.configuration}}
+    - name: Build WASM
+      run: ./wasm_build_win.bat ${{matrix.configuration}}
     - name: Update Package
       if: ${{ matrix.configuration == 'Release' }}
       run: |

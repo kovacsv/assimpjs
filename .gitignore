@@ -1,7 +1,6 @@
+emsdk/*
 build/*
-em_build/*
-em_build_win_local*.bat
-em_build_dist_local*.bat
+build_wasm/*
 package-lock.json
 node_modules
 __pycache__
