@@ -1,4 +1,4 @@
-emsdk/*
+emsdk
 build/*
 build_wasm/*
 package-lock.json
