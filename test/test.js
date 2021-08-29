@@ -6,7 +6,7 @@ var config = 'Debug'
 if (process.env.TEST_CONFIG !== undefined) {
 	config = process.env.TEST_CONFIG;
 }
-var assimpjs = require ('../em_build/' + config + '/assimpjs.js')();
+var assimpjs = require ('../build_wasm/' + config + '/assimpjs.js')();
 
 var ajs = null;
 before (async function () {
