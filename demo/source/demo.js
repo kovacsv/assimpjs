@@ -58,18 +58,21 @@ window.onload = function () {
 		window.addEventListener ('drop', (ev) => {
 			ev.stopPropagation ();
 			ev.preventDefault ();
-			if (ev.dataTransfer.files.length > 0) {
+			let files = ev.dataTransfer.files;
+			if (files.length > 0) {
 				dragDropDiv.innerHTML = texts.loadingModel;
 				resultDiv.style.display = 'none';
 				resultDiv.innerHTML = '';
-				LoadModel (ajs, ev.dataTransfer.files, (result) => {
-					dragDropDiv.innerHTML = texts.dragDrop;
-					let formatter = new JSONFormatter (result, 1, {
-						'theme' : 'dark'
+				setTimeout (() => {
+					LoadModel (ajs, files, (result) => {
+						dragDropDiv.innerHTML = texts.dragDrop;
+						let formatter = new JSONFormatter (result, 2, {
+							'theme' : 'dark'
+						});
+						resultDiv.style.display = 'block';
+						resultDiv.appendChild (formatter.render ());
 					});
-					resultDiv.style.display = 'block';
-					resultDiv.appendChild (formatter.render ());
-				});
+				}, 10);
 			}
 		}, false);
 	});
