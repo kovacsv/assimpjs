@@ -187,13 +187,19 @@ it ('IRRMesh', function () {
 });
 
 it ('LWO', function () {
+	assert (IsSuccess (['LWO/LWO2/hierarchy.lwo']));
+	assert (IsSuccess (['LWO/LWO2/nonplanar_polygon.lwo']));
+	assert (IsSuccess (['LWO/LWO2/sphere_with_gradient.lwo']));
 	assert (IsSuccess (['LWO/LWO2/sphere_with_mat_gloss_10pc.lwo']));
+	assert (IsSuccess (['LWO/LWO2/transparency.lwo']));
+	assert (IsSuccess (['LWO/LWO2/uvtest.lwo']));
 	assert (IsSuccess (['LWO/LXOB_Modo/sphereWithVertMap.lxo']));
 
 	assert (IsError (['LWO/LWOB/sphere_with_mat_gloss_10pc.lwo']));
 });
 
 it ('LWS', function () {
+	assert (IsSuccess (['LWS/move_x.lws']));
 	assert (IsSuccess (['LWS/simple_cube.lwo']));
 });
 
@@ -203,6 +209,7 @@ it ('M3D', function () {
 });
 
 it ('MD2', function () {
+	assert (IsSuccess (['MD2/faerie.md2']));
 	assert (IsSuccess (['MD2/sydney.md2']));
 });
 
@@ -223,15 +230,23 @@ it ('MDC', function () {
 // });
 
 it ('MS3D', function () {
+	assert (IsSuccess (['MS3D/twospheres.ms3d']));
 	assert (IsSuccess (['MS3D/twospheres_withmats.ms3d']));
+	assert (IsSuccess (['MS3D/Wuson.ms3d']));
 });
 
 it ('NFF', function () {
+	assert (IsSuccess (['NFF/NFF/cylinder.nff']));
+	assert (IsSuccess (['NFF/NFF/hexahedron.nff']));
 	assert (IsSuccess (['NFF/NFF/spheres.nff']));
 });
 
 it ('OBJ', function () {
+	assert (IsSuccess (['OBJ/box.obj']));
+	assert (IsSuccess (['OBJ/box_longline.obj']));
+	assert (IsSuccess (['OBJ/box_mat_with_spaces.obj']));
 	assert (IsSuccess (['OBJ/spider.obj']));
+	assert (IsSuccess (['OBJ/cube_usemtl.obj']));
 	assert (IsSuccess (['OBJ/cube_usemtl.obj', 'OBJ/cube_usemtl.mtl']));
 });
 
