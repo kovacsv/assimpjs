@@ -108,8 +108,6 @@ it ('BLEND', function () {
 
 it ('BVH', function () {
 	assert (IsSuccess (['BVH/Boxing_Toes.bvh']));
-	assert (IsSuccess (['BVH/01_01.bvh']));
-	assert (IsSuccess (['BVH/01_03.bvh']));
 });
 
 it ('COB', function () {
