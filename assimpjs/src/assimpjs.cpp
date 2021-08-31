@@ -288,7 +288,7 @@ private:
 	std::string& resultJson;
 };
 
-const aiScene* ImportModelByMainFile (Assimp::Importer& importer, const File* file)
+static const aiScene* ImportModelByMainFile (Assimp::Importer& importer, const File* file)
 {
 	try {
 		const aiScene* scene = importer.ReadFile (file->path,
@@ -304,9 +304,9 @@ const aiScene* ImportModelByMainFile (Assimp::Importer& importer, const File* fi
 	return nullptr;
 }
 
-std::string CreateErrorJson (const std::string& errorMessage)
+static std::string CreateErrorJson (const std::string& errorCode)
 {
-	return "{ \"error\" : \"" + errorMessage + "\" }";
+	return "{\"error\":\"" + errorCode + "\"}";
 }
 
 std::string ImportModel (const FileList& fileList)
@@ -331,12 +331,15 @@ std::string ImportModel (const FileList& fileList)
 		return CreateErrorJson ("model_import_failed");
 	}
 
-	std::string resultJson;
-
 	Assimp::Exporter exporter;
+
+	std::string resultJson;
 	ExportIOSystem* exportIOSystem = new ExportIOSystem (resultJson);
 	exporter.SetIOHandler (exportIOSystem);
-	exporter.Export (scene, "assjson", "result.json");
+
+	Assimp::ExportProperties exportProperties;
+	exportProperties.SetPropertyBool ("JSON_SKIP_WHITESPACES", true);
+	exporter.Export (scene, "assjson", "result.json", 0u, &exportProperties);
 
 	if (resultJson.empty ()) {
 		return CreateErrorJson ("model_json_conversion_failed");
