@@ -111,3 +111,7 @@ tools\build_wasm_win_release.bat
 ### 4. Build the native project (optional)
 
 If you want to debug the code, it's useful to build a native project. To do that, just use cmake to generate the project of your choice.
+
+## How to run locally?
+
+To run the demo and the examples locally, you have to start a web server. Run `npm install` from the root directory, then run `npm start` and visit `http://localhost:8080`.

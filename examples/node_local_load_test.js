@@ -1,5 +1,5 @@
 let fs = require ('fs');
-const assimpjs = require ('./assimpjs.js')();
+const assimpjs = require ('../dist/assimpjs.js')();
 
 assimpjs.then ((ajs) => {
     // create new file list object
