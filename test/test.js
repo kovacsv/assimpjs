@@ -250,6 +250,7 @@ it ('OBJ', function () {
 
 it ('OFF', function () {
 	assert (IsSuccess (['OFF/Cube.off']));
+	assert (IsSuccess (['OFF/Wuson.off']));
 });
 
 it ('Ogre', function () {
@@ -258,15 +259,21 @@ it ('Ogre', function () {
 
 it ('OpenGEX', function () {
 	assert (IsSuccess (['OpenGEX/Example.ogex']));
+	assert (IsSuccess (['OpenGEX/camera.ogex']));
 });
 
 it ('PLY', function () {
 	assert (IsSuccess (['PLY/cube.ply']));
 	assert (IsSuccess (['PLY/cube_binary.ply']));
+	assert (IsSuccess (['PLY/cube_uv.ply']));
+	assert (IsSuccess (['PLY/Wuson.ply']));
 });
 
 it ('Q3D', function () {
 	assert (IsSuccess (['Q3D/earth.q3o']));
+	assert (IsSuccess (['Q3D/E-AT-AT.q3o']));
+	assert (IsSuccess (['Q3D/WusonOrange.q3o']));
+	assert (IsSuccess (['Q3D/WusonOrange.q3s']));
 });
 
 it ('RAW', function () {
@@ -280,11 +287,16 @@ it ('SIB', function () {
 
 it ('SMD', function () {
 	assert (IsSuccess (['SMD/triangle.smd']));
+	assert (IsSuccess (['SMD/holy_grailref.smd']));
+	assert (IsSuccess (['SMD/WusonSMD.smd']));
 });
 
 it ('STL', function () {
 	assert (IsSuccess (['STL/Spider_ascii.stl']));
 	assert (IsSuccess (['STL/Spider_binary.stl']));
+	assert (IsSuccess (['STL/sphereWithHole.stl']));
+	assert (IsSuccess (['STL/3DSMaxExport.STL']));
+	assert (IsSuccess (['STL/Wuson.stl']));
 });
 
 it ('TER', function () {
@@ -305,6 +317,8 @@ it ('X3D', function () {
 
 it ('XGL', function () {
 	assert (IsSuccess (['XGL/cubes_with_alpha.zgl']));
+	assert (IsSuccess (['XGL/sample_official.xgl']));
+	assert (IsSuccess (['XGL/Wuson.zgl']));
 });
 
 });

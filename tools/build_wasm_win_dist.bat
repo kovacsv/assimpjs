@@ -9,6 +9,8 @@ call npm run test || goto :error
 mkdir dist
 copy build_wasm\Release\assimpjs.js dist\assimpjs.js || goto :error
 copy build_wasm\Release\assimpjs.wasm dist\assimpjs.wasm || goto :error
+copy assimp\LICENSE dist\license.assimp.txt || goto :error
+copy LICENSE.md dist\license.assimpjs.txt || goto :error
 
 popd
 echo Distribution Succeeded.
