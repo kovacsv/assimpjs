@@ -13,7 +13,7 @@ The library runs in the browser and as a node.js module as well.
 
 You will need two files: `assimpjs.js` and `assimpjs.wasm`. The wasm file is loaded runtime by the js file.
 
-Given that browsers don't access the file system, you should provide all the files needed for import. Some 3D formats are coming in multiple files, so you should list all of them to import the model properly. The main file to import should always be the first one in the list.
+Given that browsers don't access the file system, you should provide all the files needed for import. Some 3D formats are coming in multiple files, so you should list all of them to import the model properly.
 
 You should provide two things for every file:
 - **name:** The name of the file. It's used if files are referring to each other.

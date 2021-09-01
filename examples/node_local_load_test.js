@@ -5,7 +5,7 @@ assimpjs.then ((ajs) => {
     // create new file list object
     let fileList = new ajs.FileList ();
     
-    // add model files (make sure that the main file is the first)
+    // add model files
     fileList.AddFile (
         'cube_with_materials.obj',
         fs.readFileSync ('testfiles/cube_with_materials.obj')
