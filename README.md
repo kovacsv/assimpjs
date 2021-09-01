@@ -11,7 +11,7 @@ The [emscripten](https://emscripten.org) interface for the [assimp](https://gith
 
 The library runs in the browser and as a node.js module as well.
 
-You will need two files: `assimpjs.js` and `assimpjs.wasm`. The wasm file is loaded runtime by the js file.
+You will need two files from the `dist` folder: `assimpjs.js` and `assimpjs.wasm`. The wasm file is loaded runtime by the js file.
 
 Given that browsers don't access the file system, you should provide all the files needed for import. Some 3D formats are coming in multiple files, so you should list all of them to import the model properly.
 
