@@ -11,6 +11,15 @@
 #include <stdio.h>
 #include <iostream>
 
+static std::string ToLowercase (const std::string& str)
+{
+	std::string res = str;
+	for (char& c : res) {
+		c = std::tolower (c);
+	}
+	return res;
+}
+
 static std::string GetFileName (const std::string& path)
 {
 	size_t lastSeparator = path.find_last_of ('/');
@@ -18,9 +27,10 @@ static std::string GetFileName (const std::string& path)
 		lastSeparator = path.find_last_of ('\\');
 	}
 	if (lastSeparator == std::wstring::npos) {
-		return path;
+		return ToLowercase (path);
 	}
-	return path.substr (lastSeparator + 1, path.length () - lastSeparator - 1);
+	std::string fileName = path.substr (lastSeparator + 1, path.length () - lastSeparator - 1);
+	return ToLowercase (fileName);
 }
 
 File::File () :
@@ -62,7 +72,6 @@ const File* FileList::GetFile (size_t index) const
 
 const File* FileList::GetFile (const std::string& path) const
 {
-	// TODO: case insensitive
 	std::string fileName = GetFileName (path);
 	for (const File& file : files) {
 		std::string currFileName = GetFileName (file.path);
@@ -298,7 +307,6 @@ static const aiScene* ImportModelByMainFile (Assimp::Importer& importer, const F
 			aiProcess_SortByPType);
 		return scene;
 	} catch (...) {
-		// TODO: exception message
 		return nullptr;
 	}
 	return nullptr;
