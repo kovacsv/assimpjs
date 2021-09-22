@@ -301,8 +301,8 @@ static const aiScene* ImportModelByMainFile (Assimp::Importer& importer, const F
 {
 	try {
 		const aiScene* scene = importer.ReadFile (file->path,
-			aiProcess_CalcTangentSpace |
 			aiProcess_Triangulate |
+			aiProcess_GenUVCoords |
 			aiProcess_JoinIdenticalVertices |
 			aiProcess_SortByPType);
 		return scene;
