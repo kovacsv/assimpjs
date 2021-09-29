@@ -37,7 +37,7 @@ std::string ImportModel (const FileList& fileList)
 	}
 
 	Assimp::Importer importer;
-	importer.SetIOHandler (new ImportIOSystem (fileList));
+	importer.SetIOHandler (new FileListIOSystemAdapter (fileList));
 
 	const aiScene* scene = nullptr;
 	for (size_t fileIndex = 0; fileIndex < fileList.FileCount (); fileIndex++) {
@@ -55,7 +55,7 @@ std::string ImportModel (const FileList& fileList)
 	Assimp::Exporter exporter;
 
 	std::string resultJson;
-	ExportIOSystem* exportIOSystem = new ExportIOSystem (resultJson);
+	StringWriterIOSystem* exportIOSystem = new StringWriterIOSystem (resultJson);
 	exporter.SetIOHandler (exportIOSystem);
 
 	Assimp::ExportProperties exportProperties;

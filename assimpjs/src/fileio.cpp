@@ -12,17 +12,17 @@ static char GetOsSeparator ()
 }
 
 
-ImportIOStream::ImportIOStream (const File& file) :
+FileIOStreamAdapter::FileIOStreamAdapter (const File& file) :
 	file (file),
 	position (0)
 {
 }
 
-ImportIOStream::~ImportIOStream ()
+FileIOStreamAdapter::~FileIOStreamAdapter ()
 {
 }
 
-size_t ImportIOStream::Read (void* pvBuffer, size_t pSize, size_t pCount)
+size_t FileIOStreamAdapter::Read (void* pvBuffer, size_t pSize, size_t pCount)
 {
 	size_t remainingElemCount = (size_t) (std::floor ((FileSize () - position) / pSize));
 	size_t readableElemCount = std::min (remainingElemCount, pCount);
@@ -34,12 +34,12 @@ size_t ImportIOStream::Read (void* pvBuffer, size_t pSize, size_t pCount)
 	return readableElemCount;
 }
 
-size_t ImportIOStream::Write (const void* pvBuffer, size_t pSize, size_t pCount)
+size_t FileIOStreamAdapter::Write (const void* pvBuffer, size_t pSize, size_t pCount)
 {
 	throw std::logic_error ("not implemented");
 }
 
-aiReturn ImportIOStream::Seek (size_t pOffset, aiOrigin pOrigin)
+aiReturn FileIOStreamAdapter::Seek (size_t pOffset, aiOrigin pOrigin)
 {
 	switch (pOrigin) {
 	case aiOrigin_SET:
@@ -57,126 +57,126 @@ aiReturn ImportIOStream::Seek (size_t pOffset, aiOrigin pOrigin)
 	return aiReturn::aiReturn_SUCCESS;
 }
 
-size_t ImportIOStream::Tell () const
+size_t FileIOStreamAdapter::Tell () const
 {
 	return position;
 }
 
-size_t ImportIOStream::FileSize () const
+size_t FileIOStreamAdapter::FileSize () const
 {
 	return file.content.size ();
 }
 
-void ImportIOStream::Flush ()
+void FileIOStreamAdapter::Flush ()
 {
 
 }
 
-ImportIOSystem::ImportIOSystem (const FileList& fileList) :
+FileListIOSystemAdapter::FileListIOSystemAdapter (const FileList& fileList) :
 	fileList (fileList)
 {
 }
 
-ImportIOSystem::~ImportIOSystem ()
+FileListIOSystemAdapter::~FileListIOSystemAdapter ()
 {
 
 }
 
-bool ImportIOSystem::Exists (const char* pFile) const
+bool FileListIOSystemAdapter::Exists (const char* pFile) const
 {
 	return fileList.GetFile (pFile) != nullptr;
 }
 
-Assimp::IOStream* ImportIOSystem::Open (const char* pFile, const char* pMode)
+Assimp::IOStream* FileListIOSystemAdapter::Open (const char* pFile, const char* pMode)
 {
 	const File* foundFile = fileList.GetFile (pFile);
 	if (foundFile == nullptr) {
 		return nullptr;
 	}
-	return new ImportIOStream (*foundFile);
+	return new FileIOStreamAdapter (*foundFile);
 }
 
-void ImportIOSystem::Close (Assimp::IOStream* pFile)
+void FileListIOSystemAdapter::Close (Assimp::IOStream* pFile)
 {
 	delete pFile;
 }
 
-char ImportIOSystem::getOsSeparator () const
+char FileListIOSystemAdapter::getOsSeparator () const
 {
 	return GetOsSeparator ();
 }
 
-ExportIOStream::ExportIOStream (std::string& resultJson) :
-	resultJson (resultJson)
+StringWriterIOStream::StringWriterIOStream (std::string& resultString) :
+	resultString (resultString)
 {
 }
 
-ExportIOStream::~ExportIOStream ()
+StringWriterIOStream::~StringWriterIOStream ()
 {
 
 }
 
-size_t ExportIOStream::Read (void* pvBuffer, size_t pSize, size_t pCount)
+size_t StringWriterIOStream::Read (void* pvBuffer, size_t pSize, size_t pCount)
 {
 	throw std::logic_error ("not implemented");
 }
 
-size_t ExportIOStream::Write (const void* pvBuffer, size_t pSize, size_t pCount)
+size_t StringWriterIOStream::Write (const void* pvBuffer, size_t pSize, size_t pCount)
 {
 	size_t memSize = pSize * pCount;
-	resultJson.append ((char*) pvBuffer, memSize);
+	resultString.append ((char*) pvBuffer, memSize);
 	return memSize;
 }
 
-aiReturn ExportIOStream::Seek (size_t pOffset, aiOrigin pOrigin)
+aiReturn StringWriterIOStream::Seek (size_t pOffset, aiOrigin pOrigin)
 {
 	throw std::logic_error ("not implemented");
 }
 
-size_t ExportIOStream::Tell () const
+size_t StringWriterIOStream::Tell () const
 {
 	throw std::logic_error ("not implemented");
 }
 
-size_t ExportIOStream::FileSize () const
+size_t StringWriterIOStream::FileSize () const
 {
 	throw std::logic_error ("not implemented");
 }
 
-void ExportIOStream::Flush ()
+void StringWriterIOStream::Flush ()
 {
 
 }
 
-ExportIOSystem::ExportIOSystem (std::string& resultJson) :
-	resultJson (resultJson)
+StringWriterIOSystem::StringWriterIOSystem (std::string& resultString) :
+	resultString (resultString)
 {
 }
 
-ExportIOSystem::~ExportIOSystem ()
+StringWriterIOSystem::~StringWriterIOSystem ()
 {
 
 }
 
-bool ExportIOSystem::Exists (const char* pFile) const
+bool StringWriterIOSystem::Exists (const char* pFile) const
 {
 	return false;
 }
 
-Assimp::IOStream* ExportIOSystem::Open (const char* pFile, const char* pMode)
+Assimp::IOStream* StringWriterIOSystem::Open (const char* pFile, const char* pMode)
 {
 	if (std::string (pFile) != "result.json") {
 		throw std::logic_error ("invalid export file");
 	}
-	return new ExportIOStream (resultJson);
+	return new StringWriterIOStream (resultString);
 }
 
-void ExportIOSystem::Close (Assimp::IOStream* pFile)
+void StringWriterIOSystem::Close (Assimp::IOStream* pFile)
 {
 	delete pFile;
 }
 
-char ExportIOSystem::getOsSeparator () const
+char StringWriterIOSystem::getOsSeparator () const
 {
 	return GetOsSeparator ();
 }
