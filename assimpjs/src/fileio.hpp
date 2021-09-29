@@ -6,11 +6,11 @@
 
 #include "filelist.hpp"
 
-class FileIOStreamAdapter : public Assimp::IOStream
+class BufferIOStreamAdapter : public Assimp::IOStream
 {
 public:
-	FileIOStreamAdapter (const File& file);
-	virtual ~FileIOStreamAdapter ();
+	BufferIOStreamAdapter (const Buffer& buffer);
+	virtual ~BufferIOStreamAdapter ();
 
 	virtual size_t		Read (void* pvBuffer, size_t pSize, size_t pCount) override;
 	virtual size_t		Write (const void* pvBuffer, size_t pSize, size_t pCount) override;
@@ -19,11 +19,10 @@ public:
 	virtual size_t		Tell () const override;
 
 	virtual size_t		FileSize () const override;
-
 	virtual void		Flush () override;
 
 private:
-	const File&			file;
+	const Buffer&		buffer;
 	size_t				position;
 };
 

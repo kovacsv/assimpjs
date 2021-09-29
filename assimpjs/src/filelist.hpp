@@ -8,16 +8,18 @@
 #include <vector>
 #include <string>
 
+using Buffer = std::vector<std::uint8_t>;
+
 class File
 {
 public:
 	File ();
-	File (const std::string& path, const std::vector<std::uint8_t>& content);
+	File (const std::string& path, const Buffer& content);
 
-	bool	IsValid () const;
+	bool			IsValid () const;
 
-	std::string					path;
-	std::vector<std::uint8_t>	content;
+	std::string		path;
+	Buffer			content;
 };
 
 class FileList
@@ -25,7 +27,7 @@ class FileList
 public:
 	FileList ();
 
-	void			AddFile (const std::string& path, const std::vector<std::uint8_t>& content);
+	void			AddFile (const std::string& path, const Buffer& content);
 	
 	size_t			FileCount () const;
 	const File*		GetFile (size_t index) const;

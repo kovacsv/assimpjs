@@ -11,63 +11,62 @@ static char GetOsSeparator ()
 #endif
 }
 
-
-FileIOStreamAdapter::FileIOStreamAdapter (const File& file) :
-	file (file),
+BufferIOStreamAdapter::BufferIOStreamAdapter (const Buffer& buffer) :
+	buffer (buffer),
 	position (0)
 {
 }
 
-FileIOStreamAdapter::~FileIOStreamAdapter ()
+BufferIOStreamAdapter::~BufferIOStreamAdapter ()
 {
 }
 
-size_t FileIOStreamAdapter::Read (void* pvBuffer, size_t pSize, size_t pCount)
+size_t BufferIOStreamAdapter::Read (void* pvBuffer, size_t pSize, size_t pCount)
 {
 	size_t remainingElemCount = (size_t) (std::floor ((FileSize () - position) / pSize));
 	size_t readableElemCount = std::min (remainingElemCount, pCount);
 	if (readableElemCount == 0) {
 		return 0;
 	}
-	memcpy (pvBuffer, &file.content[position], readableElemCount * pSize);
+	memcpy (pvBuffer, &buffer[position], readableElemCount * pSize);
 	position += readableElemCount * pSize;
 	return readableElemCount;
 }
 
-size_t FileIOStreamAdapter::Write (const void* pvBuffer, size_t pSize, size_t pCount)
+size_t BufferIOStreamAdapter::Write (const void* pvBuffer, size_t pSize, size_t pCount)
 {
 	throw std::logic_error ("not implemented");
 }
 
-aiReturn FileIOStreamAdapter::Seek (size_t pOffset, aiOrigin pOrigin)
+aiReturn BufferIOStreamAdapter::Seek (size_t pOffset, aiOrigin pOrigin)
 {
 	switch (pOrigin) {
-	case aiOrigin_SET:
-		position = pOffset;
-		break;
-	case aiOrigin_CUR:
-		position += pOffset;
-		break;
-	case aiOrigin_END:
-		position = file.content.size () - pOffset;
-		break;
-	default:
-		break;
+		case aiOrigin_SET:
+			position = pOffset;
+			break;
+		case aiOrigin_CUR:
+			position += pOffset;
+			break;
+		case aiOrigin_END:
+			position = buffer.size () - pOffset;
+			break;
+		default:
+			break;
 	}
 	return aiReturn::aiReturn_SUCCESS;
 }
 
-size_t FileIOStreamAdapter::Tell () const
+size_t BufferIOStreamAdapter::Tell () const
 {
 	return position;
 }
 
-size_t FileIOStreamAdapter::FileSize () const
+size_t BufferIOStreamAdapter::FileSize () const
 {
-	return file.content.size ();
+	return buffer.size ();
 }
 
-void FileIOStreamAdapter::Flush ()
+void BufferIOStreamAdapter::Flush ()
 {
 
 }
@@ -93,7 +92,7 @@ Assimp::IOStream* FileListIOSystemAdapter::Open (const char* pFile, const char* 
 	if (foundFile == nullptr) {
 		return nullptr;
 	}
-	return new FileIOStreamAdapter (*foundFile);
+	return new BufferIOStreamAdapter (foundFile->content);
 }
 
 void FileListIOSystemAdapter::Close (Assimp::IOStream* pFile)

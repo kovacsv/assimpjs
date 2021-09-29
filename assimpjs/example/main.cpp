@@ -11,7 +11,7 @@ static File GetFile (const std::string& filePath)
 		return File ();
 	}
 	size_t fileSize = stream->FileSize ();
-	std::vector<std::uint8_t> content (fileSize);
+	Buffer content (fileSize);
 	stream->Read (&content[0], 1, fileSize);
 	return File (filePath, content);
 }

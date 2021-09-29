@@ -28,7 +28,7 @@ File::File () :
 {
 }
 
-File::File (const std::string& path, const std::vector<std::uint8_t>& content) :
+File::File (const std::string& path, const Buffer& content) :
 	path (path),
 	content (content)
 {
@@ -44,7 +44,7 @@ FileList::FileList () :
 {
 }
 
-void FileList::AddFile (const std::string& path, const std::vector<std::uint8_t>& content)
+void FileList::AddFile (const std::string& path, const Buffer& content)
 {
 	files.push_back (File (path, content));
 }
@@ -75,7 +75,7 @@ const File* FileList::GetFile (const std::string& path) const
 
 void FileList::AddFileEmscripten (const std::string& path, const emscripten::val& content)
 {
-	std::vector<std::uint8_t> contentArr = emscripten::vecFromJSArray<std::uint8_t> (content);
+	Buffer contentArr = emscripten::vecFromJSArray<std::uint8_t> (content);
 	AddFile (path, contentArr);
 }
 #endif
