@@ -46,7 +46,7 @@ assimpjs ().then (function (ajs) {
         }
         
         // import model
-        let result = ajs.ImportModel (fileList);
+        let result = ajs.ImportFileList (fileList);
         
         // parse the result json
         let resultJson = JSON.parse (result);
@@ -77,7 +77,35 @@ assimpjs.then ((ajs) => {
     );
     
     // import model
-    let result = ajs.ImportModel (fileList);
+    let result = ajs.ImportFileList (fileList);
+    
+    // parse the result json
+    let resultJson = JSON.parse (result);
+});
+```
+
+It's also possible to delay load the required files so they have to be loaded only when the importer needs them. In this case you have to provide only the name and content of the main file, and implement callbacks to provide additional files.
+
+```js
+let fs = require ('fs');
+const assimpjs = require ('./assimpjs.js')();
+
+assimpjs.then ((ajs) => {
+    // import model
+    let result = ajs.ImportFile (
+		// file name
+		'cube_with_materials.obj',
+		// file content as arraybuffer
+		fs.readFileSync ('testfiles/cube_with_materials.obj'),
+		// check if file exists by name
+		function (fileName) {
+			return fs.existsSync ('testfiles/' + fileName);
+		},
+		// get file content as arraybuffer by name
+		function (fileName) {
+			return fs.readFileSync ('testfiles/' + fileName);
+		}
+	);
     
     // parse the result json
     let resultJson = JSON.parse (result);

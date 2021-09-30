@@ -25,7 +25,7 @@ function LoadModel (ajs, files, onLoad)
 		for (let i = 0; i < arrayBuffers.length; i++) {
 			fileList.AddFile (files[i].name, new Uint8Array (arrayBuffers[i]));
 		}
-		let result = ajs.ImportModel (fileList);
+		let result = ajs.ImportFileList (fileList);
 		resultJson = JSON.parse (result);
 		onLoad (resultJson);
 	}).catch (() => {

@@ -6,10 +6,20 @@
 
 #include "filelist.hpp"
 
+class FileLoader
+{
+public:
+	FileLoader ();
+	virtual ~FileLoader ();
+
+	virtual bool	Exists (const char* pFile) const = 0;
+	virtual Buffer	Load (const char* pFile) const = 0;
+};
+
 class BufferIOStreamAdapter : public Assimp::IOStream
 {
 public:
-	BufferIOStreamAdapter (const Buffer& buffer);
+	BufferIOStreamAdapter (const Buffer* buffer);
 	virtual ~BufferIOStreamAdapter ();
 
 	virtual size_t		Read (void* pvBuffer, size_t pSize, size_t pCount) override;
@@ -21,9 +31,33 @@ public:
 	virtual size_t		FileSize () const override;
 	virtual void		Flush () override;
 
-private:
-	const Buffer&		buffer;
+protected:
+	const Buffer*		buffer;
 	size_t				position;
+};
+
+class OwnerBufferIOStreamAdapter : public BufferIOStreamAdapter
+{
+public:
+	OwnerBufferIOStreamAdapter (const Buffer* buffer);
+	virtual ~OwnerBufferIOStreamAdapter ();
+};
+
+class DelayLoadedIOSystemAdapter : public Assimp::IOSystem
+{
+public:
+	DelayLoadedIOSystemAdapter (const File& file, const FileLoader& loader);
+	virtual ~DelayLoadedIOSystemAdapter ();
+
+	virtual bool				Exists (const char* pFile) const override;
+	virtual Assimp::IOStream*	Open (const char* pFile, const char* pMode) override;
+	virtual void				Close (Assimp::IOStream* pFile) override;
+
+	virtual char				getOsSeparator () const override;
+
+private:
+	const File&					file;
+	const FileLoader&			loader;
 };
 
 class FileListIOSystemAdapter : public Assimp::IOSystem

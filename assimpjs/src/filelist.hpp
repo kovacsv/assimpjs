@@ -16,8 +16,6 @@ public:
 	File ();
 	File (const std::string& path, const Buffer& content);
 
-	bool			IsValid () const;
-
 	std::string		path;
 	Buffer			content;
 };
@@ -40,5 +38,7 @@ public:
 private:
 	std::vector<File>	files;
 };
+
+std::string GetFileName (const std::string& path);
 
 #endif

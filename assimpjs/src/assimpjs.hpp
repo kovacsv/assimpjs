@@ -6,10 +6,12 @@
 #endif
 
 #include "filelist.hpp"
+#include "fileio.hpp"
 
 #include <vector>
 #include <string>
 
-std::string ImportModel (const FileList& fileList);
+std::string ImportFile (const File& file, const FileLoader& loader);
+std::string ImportFileList (const FileList& fileList);
 
 #endif

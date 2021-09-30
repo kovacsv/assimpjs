@@ -16,14 +16,19 @@ before (async function () {
 	ajs = await assimpjs;
 });
 
+function GetTestFileLocation (fileName)
+{
+	return path.join (__dirname, '../assimp/test/models/' + fileName);
+}
+
 function LoadModel (files)
 {
 	let fileList = new ajs.FileList ();
 	for (let i = 0; i < files.length; i++) {
-		let filePath = path.join (__dirname, '../assimp/test/models/' + files[i]);
+		let filePath = GetTestFileLocation (files[i]);
 		fileList.AddFile (filePath, fs.readFileSync (filePath))
 	}
-	return ajs.ImportModel (fileList);
+	return ajs.ImportFileList (fileList);
 }
 
 function IsError (files)
@@ -53,6 +58,21 @@ it ('Not importable file', function () {
 it ('Independent order', function () {
 	assert (IsSuccess (['OBJ/cube_usemtl.obj', 'OBJ/cube_usemtl.mtl']));
 	assert (IsSuccess (['OBJ/cube_usemtl.mtl', 'OBJ/cube_usemtl.obj']));
+});
+
+it ('Delay load', function () {
+	let sceneJson = ajs.ImportFile (
+		'OBJ/cube_usemtl.obj',
+		fs.readFileSync (GetTestFileLocation ('OBJ/cube_usemtl.obj')),
+		function (fileName) {
+			return fs.existsSync (GetTestFileLocation ('OBJ/' + fileName));
+		},
+		function (fileName) {
+			return fs.readFileSync (GetTestFileLocation ('OBJ/' + fileName));
+		}
+	);
+	let scene = JSON.parse (sceneJson);
+	assert.deepStrictEqual (scene.materials[1].properties[2].value, [1, 1, 1]);
 });
 
 it ('3D', function () {

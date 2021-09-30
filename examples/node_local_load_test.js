@@ -16,7 +16,7 @@ assimpjs.then ((ajs) => {
     );
     
     // import model
-    let result = ajs.ImportModel (fileList);
+    let result = ajs.ImportFileList (fileList);
     
     // parse the result json
     let resultJson = JSON.parse (result);

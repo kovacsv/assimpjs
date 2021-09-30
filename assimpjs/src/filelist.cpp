@@ -9,19 +9,6 @@ static std::string ToLowercase (const std::string& str)
 	return res;
 }
 
-static std::string GetFileName (const std::string& path)
-{
-	size_t lastSeparator = path.find_last_of ('/');
-	if (lastSeparator == std::wstring::npos) {
-		lastSeparator = path.find_last_of ('\\');
-	}
-	if (lastSeparator == std::wstring::npos) {
-		return ToLowercase (path);
-	}
-	std::string fileName = path.substr (lastSeparator + 1, path.length () - lastSeparator - 1);
-	return ToLowercase (fileName);
-}
-
 File::File () :
 	path (),
 	content ()
@@ -32,11 +19,6 @@ File::File (const std::string& path, const Buffer& content) :
 	path (path),
 	content (content)
 {
-}
-
-bool File::IsValid () const
-{
-	return !path.empty () && !content.empty ();
 }
 
 FileList::FileList () :
@@ -78,4 +60,18 @@ void FileList::AddFileEmscripten (const std::string& path, const emscripten::val
 	Buffer contentArr = emscripten::vecFromJSArray<std::uint8_t> (content);
 	AddFile (path, contentArr);
 }
+
 #endif
+
+std::string GetFileName (const std::string& path)
+{
+	size_t lastSeparator = path.find_last_of ('/');
+	if (lastSeparator == std::wstring::npos) {
+		lastSeparator = path.find_last_of ('\\');
+	}
+	if (lastSeparator == std::wstring::npos) {
+		return ToLowercase (path);
+	}
+	std::string fileName = path.substr (lastSeparator + 1, path.length () - lastSeparator - 1);
+	return ToLowercase (fileName);
+}

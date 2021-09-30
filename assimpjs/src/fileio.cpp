@@ -11,7 +11,17 @@ static char GetOsSeparator ()
 #endif
 }
 
-BufferIOStreamAdapter::BufferIOStreamAdapter (const Buffer& buffer) :
+FileLoader::FileLoader ()
+{
+
+}
+
+FileLoader::~FileLoader ()
+{
+
+}
+
+BufferIOStreamAdapter::BufferIOStreamAdapter (const Buffer* buffer) :
 	buffer (buffer),
 	position (0)
 {
@@ -19,6 +29,7 @@ BufferIOStreamAdapter::BufferIOStreamAdapter (const Buffer& buffer) :
 
 BufferIOStreamAdapter::~BufferIOStreamAdapter ()
 {
+
 }
 
 size_t BufferIOStreamAdapter::Read (void* pvBuffer, size_t pSize, size_t pCount)
@@ -28,7 +39,7 @@ size_t BufferIOStreamAdapter::Read (void* pvBuffer, size_t pSize, size_t pCount)
 	if (readableElemCount == 0) {
 		return 0;
 	}
-	memcpy (pvBuffer, &buffer[position], readableElemCount * pSize);
+	memcpy (pvBuffer, buffer->data () + position, readableElemCount * pSize);
 	position += readableElemCount * pSize;
 	return readableElemCount;
 }
@@ -48,7 +59,7 @@ aiReturn BufferIOStreamAdapter::Seek (size_t pOffset, aiOrigin pOrigin)
 			position += pOffset;
 			break;
 		case aiOrigin_END:
-			position = buffer.size () - pOffset;
+			position = buffer->size () - pOffset;
 			break;
 		default:
 			break;
@@ -63,12 +74,64 @@ size_t BufferIOStreamAdapter::Tell () const
 
 size_t BufferIOStreamAdapter::FileSize () const
 {
-	return buffer.size ();
+	return buffer->size ();
 }
 
 void BufferIOStreamAdapter::Flush ()
 {
 
+}
+
+OwnerBufferIOStreamAdapter::OwnerBufferIOStreamAdapter (const Buffer* buffer) :
+	BufferIOStreamAdapter (buffer)
+{
+}
+
+OwnerBufferIOStreamAdapter::~OwnerBufferIOStreamAdapter ()
+{
+	delete buffer;
+}
+
+DelayLoadedIOSystemAdapter::DelayLoadedIOSystemAdapter (const File& file, const FileLoader& loader) :
+	file (file),
+	loader (loader)
+{
+}
+
+DelayLoadedIOSystemAdapter::~DelayLoadedIOSystemAdapter ()
+{
+
+}
+
+bool DelayLoadedIOSystemAdapter::Exists (const char* pFile) const
+{
+	if (GetFileName (file.path) == GetFileName (pFile)) {
+		return true;
+	}
+	return loader.Exists (pFile);
+}
+
+Assimp::IOStream* DelayLoadedIOSystemAdapter::Open (const char* pFile, const char* pMode)
+{
+	if (GetFileName (file.path) == GetFileName (pFile)) {
+		return new BufferIOStreamAdapter (&file.content);
+	}
+	if (!loader.Exists (pFile)) {
+		return nullptr;
+	}
+	Buffer buffer = loader.Load (pFile);
+	Buffer* bufferPtr = new Buffer (buffer);
+	return new OwnerBufferIOStreamAdapter (bufferPtr);
+}
+
+void DelayLoadedIOSystemAdapter::Close (Assimp::IOStream* pFile)
+{
+	delete pFile;
+}
+
+char DelayLoadedIOSystemAdapter::getOsSeparator () const
+{
+	return GetOsSeparator ();
 }
 
 FileListIOSystemAdapter::FileListIOSystemAdapter (const FileList& fileList) :
@@ -92,7 +155,7 @@ Assimp::IOStream* FileListIOSystemAdapter::Open (const char* pFile, const char* 
 	if (foundFile == nullptr) {
 		return nullptr;
 	}
-	return new BufferIOStreamAdapter (foundFile->content);
+	return new BufferIOStreamAdapter (&foundFile->content);
 }
 
 void FileListIOSystemAdapter::Close (Assimp::IOStream* pFile)
