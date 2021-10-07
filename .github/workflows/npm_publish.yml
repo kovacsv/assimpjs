@@ -15,7 +15,8 @@ jobs:
       with:
         node-version: 16.x
     - name: Publish package
-      - run: npm install
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}        
+      run: |
+        npm install
+        npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.npm_token}}        
