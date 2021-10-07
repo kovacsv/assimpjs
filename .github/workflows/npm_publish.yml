@@ -9,14 +9,12 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup node.js 16.x
-      uses: actions/setup-node@v2
-      with:
-        node-version: 16.x
-    - name: Publish package
-      run: |
-        npm install
-        npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{secrets.npm_token}}        
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
