@@ -1,7 +1,7 @@
 {
 	"name": "assimpjs",
 	"description": "Javascript interface for the assimp library.",
-	"version": "0.0.4-beta",
+	"version": "0.0.4",
 	"repository": "github:kovacsv/assimpjs",
 	"license": "MIT",
 	"devDependencies": {
