@@ -4,6 +4,7 @@
 	"version": "0.0.4",
 	"repository": "github:kovacsv/assimpjs",
 	"license": "MIT",
+	"main": "./dist/assimpjs.js",
 	"devDependencies": {
 		"http-server": "^0.12.3",
 		"mocha": "^8.3.2"
