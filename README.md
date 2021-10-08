@@ -7,6 +7,14 @@ The [emscripten](https://emscripten.org) interface for the [assimp](https://gith
 [![Native Build](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml)
 [![WASM Build](https://github.com/kovacsv/assimpjs/actions/workflows/wasm_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/wasm_build.yml)
 
+## How to install?
+
+You can get assimpjs from [npm](https://www.npmjs.com/package/assimpjs):
+
+```
+npm install assimpjs
+```
+
 ## How to use?
 
 The library runs in the browser and as a node.js module as well.
@@ -56,11 +64,11 @@ assimpjs ().then (function (ajs) {
 
 ### Use as a node.js module
 
-You should require the `assimpjs.js` module in your script. In node.js you can use the file system module to get the buffer of each file.
+You should require the `assimpjs` module in your script. In node.js you can use the file system module to get the buffer of each file.
 
 ```js
 let fs = require ('fs');
-const assimpjs = require ('./assimpjs.js')();
+const assimpjs = require ('assimpjs')();
 
 assimpjs.then ((ajs) => {
     // create new file list object
@@ -88,7 +96,7 @@ It's also possible to delay load the required files so they have to be loaded on
 
 ```js
 let fs = require ('fs');
-const assimpjs = require ('./assimpjs.js')();
+const assimpjs = require ('assimpjs')();
 
 assimpjs.then ((ajs) => {
     // import model
