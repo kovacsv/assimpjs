@@ -15,11 +15,21 @@ assimpjs.then ((ajs) => {
         fs.readFileSync ('testfiles/cube_with_materials.mtl')
     );
     
-    // import model
-    let result = ajs.ImportFileList (fileList);
-    
+    // convert file list
+    let result = ajs.ConvertFileList (fileList);
+
+    // check if the conversion succeeded
+    if (!result.IsSuccess () || result.FileCount () == 0) {
+        console.log (result.GetErrorCode ());
+        return;
+    }
+
+    // get the result file, and convert to string
+    let resultFile = result.GetFile (0);
+    let jsonContent = new TextDecoder ().decode (resultFile.GetContent ());
+
     // parse the result json
-    let resultJson = JSON.parse (result);
+    let resultJson = JSON.parse (jsonContent);
     
     console.log (resultJson);
 });

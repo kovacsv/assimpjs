@@ -25,9 +25,17 @@ function LoadModel (ajs, files, onLoad)
 		for (let i = 0; i < arrayBuffers.length; i++) {
 			fileList.AddFile (files[i].name, new Uint8Array (arrayBuffers[i]));
 		}
-		let result = ajs.ImportFileList (fileList);
-		resultJson = JSON.parse (result);
-		onLoad (resultJson);
+		let result = ajs.ConvertFileList (fileList);
+		if (!result.IsSuccess () || result.FileCount () == 0) {
+			onLoad ({
+				error: result.GetErrorCode ()
+			});
+		} else {
+			let resultFile = result.GetFile (0);
+			let jsonContent = new TextDecoder ().decode (resultFile.GetContent ());
+			let resultJson = JSON.parse (jsonContent);
+			onLoad (resultJson);
+		}
 	}).catch (() => {
 		onLoad ({
 			error: 'failed_to_load_file'

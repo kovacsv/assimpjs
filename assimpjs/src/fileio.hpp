@@ -16,11 +16,11 @@ public:
 	virtual Buffer	Load (const char* pFile) const = 0;
 };
 
-class BufferIOStreamAdapter : public Assimp::IOStream
+class BufferIOStreamReadAdapter : public Assimp::IOStream
 {
 public:
-	BufferIOStreamAdapter (const Buffer* buffer);
-	virtual ~BufferIOStreamAdapter ();
+	BufferIOStreamReadAdapter (const Buffer* buffer);
+	virtual ~BufferIOStreamReadAdapter ();
 
 	virtual size_t		Read (void* pvBuffer, size_t pSize, size_t pCount) override;
 	virtual size_t		Write (const void* pvBuffer, size_t pSize, size_t pCount) override;
@@ -36,18 +36,38 @@ protected:
 	size_t				position;
 };
 
-class OwnerBufferIOStreamAdapter : public BufferIOStreamAdapter
+class BufferIOStreamWriteAdapter : public Assimp::IOStream
 {
 public:
-	OwnerBufferIOStreamAdapter (const Buffer* buffer);
-	virtual ~OwnerBufferIOStreamAdapter ();
+	BufferIOStreamWriteAdapter (Buffer* buffer);
+	virtual ~BufferIOStreamWriteAdapter ();
+
+	virtual size_t		Read (void* pvBuffer, size_t pSize, size_t pCount) override;
+	virtual size_t		Write (const void* pvBuffer, size_t pSize, size_t pCount) override;
+
+	virtual aiReturn	Seek (size_t pOffset, aiOrigin pOrigin) override;
+	virtual size_t		Tell () const override;
+
+	virtual size_t		FileSize () const override;
+	virtual void		Flush () override;
+
+protected:
+	Buffer*				buffer;
+	size_t				position;
 };
 
-class DelayLoadedIOSystemAdapter : public Assimp::IOSystem
+class OwnerBufferIOStreamReadAdapter : public BufferIOStreamReadAdapter
 {
 public:
-	DelayLoadedIOSystemAdapter (const File& file, const FileLoader& loader);
-	virtual ~DelayLoadedIOSystemAdapter ();
+	OwnerBufferIOStreamReadAdapter (const Buffer* buffer);
+	virtual ~OwnerBufferIOStreamReadAdapter ();
+};
+
+class DelayLoadedIOSystemReadAdapter : public Assimp::IOSystem
+{
+public:
+	DelayLoadedIOSystemReadAdapter (const File& file, const FileLoader& loader);
+	virtual ~DelayLoadedIOSystemReadAdapter ();
 
 	virtual bool				Exists (const char* pFile) const override;
 	virtual Assimp::IOStream*	Open (const char* pFile, const char* pMode) override;
@@ -60,11 +80,11 @@ private:
 	const FileLoader&			loader;
 };
 
-class FileListIOSystemAdapter : public Assimp::IOSystem
+class FileListIOSystemReadAdapter : public Assimp::IOSystem
 {
 public:
-	FileListIOSystemAdapter (const FileList& fileList);
-	virtual ~FileListIOSystemAdapter ();
+	FileListIOSystemReadAdapter (const FileList& fileList);
+	virtual ~FileListIOSystemReadAdapter ();
 
 	virtual bool				Exists (const char* pFile) const override;
 	virtual Assimp::IOStream*	Open (const char* pFile, const char* pMode) override;
@@ -76,30 +96,11 @@ private:
 	const FileList&				fileList;
 };
 
-class StringWriterIOStream : public Assimp::IOStream
+class FileListIOSystemWriteAdapter : public Assimp::IOSystem
 {
 public:
-	StringWriterIOStream (std::string& resultString);
-	virtual ~StringWriterIOStream ();
-
-	virtual size_t		Read (void* pvBuffer, size_t pSize, size_t pCount) override;
-	virtual size_t		Write (const void* pvBuffer, size_t pSize, size_t pCount) override;
-
-	virtual aiReturn	Seek (size_t pOffset, aiOrigin pOrigin) override;
-	virtual size_t		Tell () const override;
-
-	virtual size_t		FileSize () const override;
-	virtual void		Flush () override;
-
-private:
-	std::string&		resultString;
-};
-
-class StringWriterIOSystem : public Assimp::IOSystem
-{
-public:
-	StringWriterIOSystem (std::string& resultString);
-	virtual ~StringWriterIOSystem ();
+	FileListIOSystemWriteAdapter (FileList& fileList);
+	virtual ~FileListIOSystemWriteAdapter ();
 
 	virtual bool				Exists (const char* pFile) const override;
 	virtual Assimp::IOStream*	Open (const char* pFile, const char* pMode) override;
@@ -108,7 +109,7 @@ public:
 	virtual char				getOsSeparator () const override;
 
 private:
-	std::string&				resultString;
+	FileList&					fileList;
 };
 
 #endif

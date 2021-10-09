@@ -1,7 +1,5 @@
 #include "assimpjs.hpp"
 
-#include "fileio.hpp"
-
 #include <assimp/Importer.hpp>
 #include <assimp/Exporter.hpp>
 #include <assimp/scene.h>
@@ -10,10 +8,10 @@
 #include <stdio.h>
 #include <iostream>
 
-static const aiScene* ImportFileListByMainFile (Assimp::Importer& importer, const File* file)
+static const aiScene* ImportFileListByMainFile (Assimp::Importer& importer, const File& file)
 {
 	try {
-		const aiScene* scene = importer.ReadFile (file->path,
+		const aiScene* scene = importer.ReadFile (file.path,
 			aiProcess_Triangulate |
 			aiProcess_GenUVCoords |
 			aiProcess_JoinIdenticalVertices |
@@ -25,65 +23,66 @@ static const aiScene* ImportFileListByMainFile (Assimp::Importer& importer, cons
 	return nullptr;
 }
 
-static std::string CreateErrorJson (const std::string& errorCode)
-{
-	return "{\"error\":\"" + errorCode + "\"}";
-}
-
-static std::string CreateResultJson (const aiScene* scene)
+static bool ExportScene (const aiScene* scene, Result& result)
 {
 	if (scene == nullptr) {
-		return CreateErrorJson ("model_import_failed");
+		result.errorCode = ErrorCode::ImportError;
+		return false;
 	}
 
 	Assimp::Exporter exporter;
-
-	std::string resultJson;
-	StringWriterIOSystem* exportIOSystem = new StringWriterIOSystem (resultJson);
+	FileListIOSystemWriteAdapter* exportIOSystem = new FileListIOSystemWriteAdapter (result.fileList);
 	exporter.SetIOHandler (exportIOSystem);
 
 	Assimp::ExportProperties exportProperties;
 	exportProperties.SetPropertyBool ("JSON_SKIP_WHITESPACES", true);
-	exporter.Export (scene, "assjson", "result.json", 0u, &exportProperties);
-
-	if (resultJson.empty ()) {
-		return CreateErrorJson ("model_json_conversion_failed");
+	aiReturn exportResult = exporter.Export (scene, "assjson", "result.json", 0u, &exportProperties);
+	if (exportResult != aiReturn_SUCCESS) {
+		result.errorCode = ErrorCode::ExportError;
+		return false;
 	}
-	return resultJson;
+
+	result.errorCode = ErrorCode::NoError;
+	return true;
 }
 
-std::string ImportFile (const File& file, const FileLoader& loader)
+Result ConvertFile (const File& file, const FileLoader& loader)
 {
 	Assimp::Importer importer;
-	importer.SetIOHandler (new DelayLoadedIOSystemAdapter (file, loader));
-	const aiScene* scene = ImportFileListByMainFile (importer, &file);
-	return CreateResultJson (scene);
+	importer.SetIOHandler (new DelayLoadedIOSystemReadAdapter (file, loader));
+	const aiScene* scene = ImportFileListByMainFile (importer, file);
+
+	Result result;
+	ExportScene (scene, result);
+	return result;
 }
 
-std::string ImportFileList (const FileList& fileList)
+Result ConvertFileList (const FileList& fileList)
 {
 	if (fileList.FileCount () == 0) {
-		return CreateErrorJson ("no_file_specified");
+		return Result (ErrorCode::NoFilesFound);
 	}
 
 	Assimp::Importer importer;
-	importer.SetIOHandler (new FileListIOSystemAdapter (fileList));
+	importer.SetIOHandler (new FileListIOSystemReadAdapter (fileList));
 
 	const aiScene* scene = nullptr;
 	for (size_t fileIndex = 0; fileIndex < fileList.FileCount (); fileIndex++) {
-		const File* file = fileList.GetFile (fileIndex);
+		const File& file = fileList.GetFile (fileIndex);
 		scene = ImportFileListByMainFile (importer, file);
 		if (scene != nullptr) {
 			break;
 		}
 	}
 
-	return CreateResultJson (scene);
+	Result result;
+	ExportScene (scene, result);
+	return result;
 }
 
 #ifdef EMSCRIPTEN
 
-std::string ImportFileEmscripten (
+Result ConvertFileEmscripten (
 	const std::string& name,
 	const emscripten::val& content,
 	const emscripten::val& existsFunc,
@@ -126,18 +125,32 @@ std::string ImportFileEmscripten (
 	Buffer buffer = emscripten::vecFromJSArray<std::uint8_t> (content);
 	File file (name, buffer);
 	FileLoaderEmscripten loader (existsFunc, loadFunc);
-	return ImportFile (file, loader);
+	return ConvertFile (file, loader);
 }
 
 EMSCRIPTEN_BINDINGS (assimpjs)
 {
+	emscripten::class_<File> ("File")
+		.constructor<> ()
+		.function ("GetPath", &File::GetPath)
+		.function ("GetContent", &File::GetContentEmscripten)
+	;
+
 	emscripten::class_<FileList> ("FileList")
 		.constructor<> ()
 		.function ("AddFile", &FileList::AddFileEmscripten)
 	;
 
-	emscripten::function<std::string, const std::string&, const emscripten::val&, const emscripten::val&, const emscripten::val&> ("ImportFile", &ImportFileEmscripten);
-	emscripten::function<std::string, const FileList&> ("ImportFileList", &ImportFileList);
+	emscripten::class_<Result> ("Result")
+		.constructor<> ()
+		.function ("IsSuccess", &Result::IsSuccess)
+		.function ("GetErrorCode", &Result::GetErrorCode)
+		.function ("FileCount", &Result::FileCount)
+		.function ("GetFile", &Result::GetFile)
+	;
+
+	emscripten::function<Result, const std::string&, const emscripten::val&, const emscripten::val&, const emscripten::val&> ("ConvertFile", &ConvertFileEmscripten);
+	emscripten::function<Result, const FileList&> ("ConvertFileList", &ConvertFileList);
 }
 
 #endif

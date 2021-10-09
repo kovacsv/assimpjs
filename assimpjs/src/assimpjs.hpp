@@ -7,11 +7,12 @@
 
 #include "filelist.hpp"
 #include "fileio.hpp"
+#include "result.hpp"
 
 #include <vector>
 #include <string>
 
-std::string ImportFile (const File& file, const FileLoader& loader);
-std::string ImportFileList (const FileList& fileList);
+Result ConvertFile (const File& file, const FileLoader& loader);
+Result ConvertFileList (const FileList& fileList);
 
 #endif

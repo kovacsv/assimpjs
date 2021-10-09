@@ -11,30 +11,9 @@ static char GetOsSeparator ()
 #endif
 }
 
-FileLoader::FileLoader ()
+static size_t ReadFromBuffer (const Buffer* buffer, size_t& position, void* pvBuffer, size_t pSize, size_t pCount)
 {
-
-}
-
-FileLoader::~FileLoader ()
-{
-
-}
-
-BufferIOStreamAdapter::BufferIOStreamAdapter (const Buffer* buffer) :
-	buffer (buffer),
-	position (0)
-{
-}
-
-BufferIOStreamAdapter::~BufferIOStreamAdapter ()
-{
-
-}
-
-size_t BufferIOStreamAdapter::Read (void* pvBuffer, size_t pSize, size_t pCount)
-{
-	size_t remainingElemCount = (size_t) (std::floor ((FileSize () - position) / pSize));
+	size_t remainingElemCount = (size_t) (std::floor ((buffer->size () - position) / pSize));
 	size_t readableElemCount = std::min (remainingElemCount, pCount);
 	if (readableElemCount == 0) {
 		return 0;
@@ -44,12 +23,7 @@ size_t BufferIOStreamAdapter::Read (void* pvBuffer, size_t pSize, size_t pCount)
 	return readableElemCount;
 }
 
-size_t BufferIOStreamAdapter::Write (const void* pvBuffer, size_t pSize, size_t pCount)
-{
-	throw std::logic_error ("not implemented");
-}
-
-aiReturn BufferIOStreamAdapter::Seek (size_t pOffset, aiOrigin pOrigin)
+static aiReturn SeekInBuffer (const Buffer* buffer, size_t& position, size_t pOffset, aiOrigin pOrigin)
 {
 	switch (pOrigin) {
 		case aiOrigin_SET:
@@ -67,43 +41,127 @@ aiReturn BufferIOStreamAdapter::Seek (size_t pOffset, aiOrigin pOrigin)
 	return aiReturn::aiReturn_SUCCESS;
 }
 
-size_t BufferIOStreamAdapter::Tell () const
+FileLoader::FileLoader ()
+{
+
+}
+
+FileLoader::~FileLoader ()
+{
+
+}
+
+BufferIOStreamReadAdapter::BufferIOStreamReadAdapter (const Buffer* buffer) :
+	buffer (buffer),
+	position (0)
+{
+}
+
+BufferIOStreamReadAdapter::~BufferIOStreamReadAdapter ()
+{
+
+}
+
+size_t BufferIOStreamReadAdapter::Read (void* pvBuffer, size_t pSize, size_t pCount)
+{
+	return ReadFromBuffer (buffer, position, pvBuffer, pSize, pCount);
+}
+
+size_t BufferIOStreamReadAdapter::Write (const void* pvBuffer, size_t pSize, size_t pCount)
+{
+	throw std::logic_error ("not implemented");
+}
+
+aiReturn BufferIOStreamReadAdapter::Seek (size_t pOffset, aiOrigin pOrigin)
+{
+	return SeekInBuffer (buffer, position, pOffset, pOrigin);
+}
+
+size_t BufferIOStreamReadAdapter::Tell () const
 {
 	return position;
 }
 
-size_t BufferIOStreamAdapter::FileSize () const
+size_t BufferIOStreamReadAdapter::FileSize () const
 {
 	return buffer->size ();
 }
 
-void BufferIOStreamAdapter::Flush ()
+void BufferIOStreamReadAdapter::Flush ()
 {
 
 }
 
-OwnerBufferIOStreamAdapter::OwnerBufferIOStreamAdapter (const Buffer* buffer) :
-	BufferIOStreamAdapter (buffer)
+BufferIOStreamWriteAdapter::BufferIOStreamWriteAdapter (Buffer* buffer) :
+	buffer (buffer),
+	position (0)
 {
 }
 
-OwnerBufferIOStreamAdapter::~OwnerBufferIOStreamAdapter ()
+BufferIOStreamWriteAdapter::~BufferIOStreamWriteAdapter ()
+{
+
+}
+
+size_t BufferIOStreamWriteAdapter::Read (void* pvBuffer, size_t pSize, size_t pCount)
+{
+	return ReadFromBuffer (buffer, position, pvBuffer, pSize, pCount);
+}
+
+size_t BufferIOStreamWriteAdapter::Write (const void* pvBuffer, size_t pSize, size_t pCount)
+{
+	size_t memSize = pSize * pCount;
+	size_t newBufferSize = std::max (buffer->size (), position + memSize);
+	if (newBufferSize > buffer->size ()) {
+		buffer->resize (newBufferSize);
+	}
+	memcpy (buffer->data () + position, pvBuffer, memSize);
+	position += memSize;
+	return memSize;
+}
+
+aiReturn BufferIOStreamWriteAdapter::Seek (size_t pOffset, aiOrigin pOrigin)
+{
+	return SeekInBuffer (buffer, position, pOffset, pOrigin);
+}
+
+size_t BufferIOStreamWriteAdapter::Tell () const
+{
+	return position;
+}
+
+size_t BufferIOStreamWriteAdapter::FileSize () const
+{
+	return buffer->size ();
+}
+
+void BufferIOStreamWriteAdapter::Flush ()
+{
+
+}
+
+OwnerBufferIOStreamReadAdapter::OwnerBufferIOStreamReadAdapter (const Buffer* buffer) :
+	BufferIOStreamReadAdapter (buffer)
+{
+}
+
+OwnerBufferIOStreamReadAdapter::~OwnerBufferIOStreamReadAdapter ()
 {
 	delete buffer;
 }
 
-DelayLoadedIOSystemAdapter::DelayLoadedIOSystemAdapter (const File& file, const FileLoader& loader) :
+DelayLoadedIOSystemReadAdapter::DelayLoadedIOSystemReadAdapter (const File& file, const FileLoader& loader) :
 	file (file),
 	loader (loader)
 {
 }
 
-DelayLoadedIOSystemAdapter::~DelayLoadedIOSystemAdapter ()
+DelayLoadedIOSystemReadAdapter::~DelayLoadedIOSystemReadAdapter ()
 {
 
 }
 
-bool DelayLoadedIOSystemAdapter::Exists (const char* pFile) const
+bool DelayLoadedIOSystemReadAdapter::Exists (const char* pFile) const
 {
 	if (GetFileName (file.path) == GetFileName (pFile)) {
 		return true;
@@ -111,134 +169,100 @@ bool DelayLoadedIOSystemAdapter::Exists (const char* pFile) const
 	return loader.Exists (pFile);
 }
 
-Assimp::IOStream* DelayLoadedIOSystemAdapter::Open (const char* pFile, const char* pMode)
+Assimp::IOStream* DelayLoadedIOSystemReadAdapter::Open (const char* pFile, const char* pMode)
 {
 	if (GetFileName (file.path) == GetFileName (pFile)) {
-		return new BufferIOStreamAdapter (&file.content);
+		return new BufferIOStreamReadAdapter (&file.content);
 	}
 	if (!loader.Exists (pFile)) {
 		return nullptr;
 	}
 	Buffer buffer = loader.Load (pFile);
 	Buffer* bufferPtr = new Buffer (buffer);
-	return new OwnerBufferIOStreamAdapter (bufferPtr);
+	return new OwnerBufferIOStreamReadAdapter (bufferPtr);
 }
 
-void DelayLoadedIOSystemAdapter::Close (Assimp::IOStream* pFile)
+void DelayLoadedIOSystemReadAdapter::Close (Assimp::IOStream* pFile)
 {
 	delete pFile;
 }
 
-char DelayLoadedIOSystemAdapter::getOsSeparator () const
+char DelayLoadedIOSystemReadAdapter::getOsSeparator () const
 {
 	return GetOsSeparator ();
 }
 
-FileListIOSystemAdapter::FileListIOSystemAdapter (const FileList& fileList) :
+FileListIOSystemReadAdapter::FileListIOSystemReadAdapter (const FileList& fileList) :
 	fileList (fileList)
 {
 }
 
-FileListIOSystemAdapter::~FileListIOSystemAdapter ()
+FileListIOSystemReadAdapter::~FileListIOSystemReadAdapter ()
 {
 
 }
 
-bool FileListIOSystemAdapter::Exists (const char* pFile) const
+bool FileListIOSystemReadAdapter::Exists (const char* pFile) const
 {
 	return fileList.GetFile (pFile) != nullptr;
 }
 
-Assimp::IOStream* FileListIOSystemAdapter::Open (const char* pFile, const char* pMode)
+Assimp::IOStream* FileListIOSystemReadAdapter::Open (const char* pFile, const char* pMode)
 {
 	const File* foundFile = fileList.GetFile (pFile);
 	if (foundFile == nullptr) {
 		return nullptr;
 	}
-	return new BufferIOStreamAdapter (&foundFile->content);
+	return new BufferIOStreamReadAdapter (&foundFile->content);
 }
 
-void FileListIOSystemAdapter::Close (Assimp::IOStream* pFile)
+void FileListIOSystemReadAdapter::Close (Assimp::IOStream* pFile)
 {
 	delete pFile;
 }
 
-char FileListIOSystemAdapter::getOsSeparator () const
+char FileListIOSystemReadAdapter::getOsSeparator () const
 {
 	return GetOsSeparator ();
 }
 
-StringWriterIOStream::StringWriterIOStream (std::string& resultString) :
-	resultString (resultString)
+FileListIOSystemWriteAdapter::FileListIOSystemWriteAdapter (FileList& fileList) :
+	fileList (fileList)
 {
 }
 
-StringWriterIOStream::~StringWriterIOStream ()
-{
-
-}
-
-size_t StringWriterIOStream::Read (void* pvBuffer, size_t pSize, size_t pCount)
-{
-	throw std::logic_error ("not implemented");
-}
-
-size_t StringWriterIOStream::Write (const void* pvBuffer, size_t pSize, size_t pCount)
-{
-	size_t memSize = pSize * pCount;
-	resultString.append ((char*) pvBuffer, memSize);
-	return memSize;
-}
-
-aiReturn StringWriterIOStream::Seek (size_t pOffset, aiOrigin pOrigin)
-{
-	throw std::logic_error ("not implemented");
-}
-
-size_t StringWriterIOStream::Tell () const
-{
-	throw std::logic_error ("not implemented");
-}
-
-size_t StringWriterIOStream::FileSize () const
-{
-	throw std::logic_error ("not implemented");
-}
-
-void StringWriterIOStream::Flush ()
+FileListIOSystemWriteAdapter::~FileListIOSystemWriteAdapter ()
 {
 
 }
 
-StringWriterIOSystem::StringWriterIOSystem (std::string& resultString) :
-	resultString (resultString)
+bool FileListIOSystemWriteAdapter::Exists (const char* pFile) const
 {
+	return fileList.GetFile (pFile) != nullptr;
 }
 
-StringWriterIOSystem::~StringWriterIOSystem ()
+Assimp::IOStream* FileListIOSystemWriteAdapter::Open (const char* pFile, const char* pMode)
 {
-
-}
-
-bool StringWriterIOSystem::Exists (const char* pFile) const
-{
-	return false;
-}
-
-Assimp::IOStream* StringWriterIOSystem::Open (const char* pFile, const char* pMode)
-{
-	if (std::string (pFile) != "result.json") {
-		throw std::logic_error ("invalid export file");
+	File* foundFile = fileList.GetFile (pFile);
+	if (foundFile != nullptr) {
+		return new BufferIOStreamWriteAdapter (&foundFile->content);
 	}
-	return new StringWriterIOStream (resultString);
+
+	fileList.AddFile (pFile, {});
+	File* newFile = fileList.GetFile (pFile);
+	if (newFile != nullptr) {
+		return new BufferIOStreamWriteAdapter (&newFile->content);
+	}
+
+	return nullptr;
 }
 
-void StringWriterIOSystem::Close (Assimp::IOStream* pFile)
+void FileListIOSystemWriteAdapter::Close (Assimp::IOStream* pFile)
 {
 	delete pFile;
 }
 
-char StringWriterIOSystem::getOsSeparator () const
+char FileListIOSystemWriteAdapter::getOsSeparator () const
 {
 	return GetOsSeparator ();
 }

@@ -32,12 +32,29 @@
 				downloadFiles.push (GetFileBuffer (files[i]));
 			}
 			Promise.all (downloadFiles).then ((arrayBuffers) => {
+				// create new file list object, and add the files
 				let fileList = new ajs.FileList ();
 				for (let i = 0; i < arrayBuffers.length; i++) {
 					fileList.AddFile (files[i].name, new Uint8Array (arrayBuffers[i]));
 				}
-				let result = ajs.ImportFileList (fileList);
-				onLoad (result);
+
+				// convert file list
+				let result = ajs.ConvertFileList (fileList);
+
+				// check if the conversion succeeded
+				if (!result.IsSuccess () || result.FileCount () == 0) {
+					onLoad (result.GetErrorCode ());
+					return;
+				}
+
+				// get the result file, and convert to string
+				let resultFile = result.GetFile (0);
+				let jsonContent = new TextDecoder ().decode (resultFile.GetContent ());				
+				
+				// parse the result json
+				let resultJson = JSON.parse (jsonContent);
+
+				onLoad (JSON.stringify (resultJson, null, 4));
 			});
 		}
 	

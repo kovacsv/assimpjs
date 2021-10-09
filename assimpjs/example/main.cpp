@@ -34,6 +34,6 @@ int main (int argc, const char* argv[])
 		fileList.AddFile (file.path, file.content);
 	}
 
-	ImportFileList (fileList);
+	ConvertFileList (fileList);
 	return 0;
 }

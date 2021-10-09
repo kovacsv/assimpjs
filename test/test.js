@@ -28,21 +28,19 @@ function LoadModel (files)
 		let filePath = GetTestFileLocation (files[i]);
 		fileList.AddFile (filePath, fs.readFileSync (filePath))
 	}
-	return ajs.ImportFileList (fileList);
+	return ajs.ConvertFileList (fileList);
 }
 
 function IsError (files)
 {
 	let result = LoadModel (files);
-	let resultJson = JSON.parse (result);
-	return resultJson.error !== undefined;
+	return !result.IsSuccess ();
 }
 
 function IsSuccess (files)
 {
 	let result = LoadModel (files);
-	let resultJson = JSON.parse (result);
-	return resultJson.error === undefined;
+	return result.IsSuccess ();
 }
 
 describe ('Importer', function () {
@@ -61,7 +59,7 @@ it ('Independent order', function () {
 });
 
 it ('Delay load', function () {
-	let sceneJson = ajs.ImportFile (
+	let result = ajs.ConvertFile (
 		'OBJ/cube_usemtl.obj',
 		fs.readFileSync (GetTestFileLocation ('OBJ/cube_usemtl.obj')),
 		function (fileName) {
@@ -71,7 +69,11 @@ it ('Delay load', function () {
 			return fs.readFileSync (GetTestFileLocation ('OBJ/' + fileName));
 		}
 	);
-	let scene = JSON.parse (sceneJson);
+	assert (result.IsSuccess ());
+	assert (result.FileCount () == 1);
+	let jsonFile = result.GetFile (0);
+	let jsonString = new TextDecoder ().decode (jsonFile.GetContent ());
+	let scene = JSON.parse (jsonString);
 	assert.deepStrictEqual (scene.materials[1].properties[2].value, [1, 1, 1]);
 });
 

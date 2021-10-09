@@ -39,7 +39,7 @@ After that, download the model files, and pass them to assimpjs.
 
 ```js
 assimpjs ().then (function (ajs) {
-    // fetch the files to import (make sure that the main file is the first)
+    // fetch the files to import
     let files = [
         'testfiles/cube_with_materials.obj',
         'testfiles/cube_with_materials.mtl'
@@ -47,17 +47,29 @@ assimpjs ().then (function (ajs) {
     Promise.all (files.map ((file) => fetch (file))).then ((responses) => {
         return Promise.all (responses.map ((res) => res.arrayBuffer ()));
     }).then ((arrayBuffers) => {
-        // create new file list object
+        // create new file list object, and add the files
         let fileList = new ajs.FileList ();
         for (let i = 0; i < files.length; i++) {
             fileList.AddFile (files[i], new Uint8Array (arrayBuffers[i]));
         }
         
-        // import model
-        let result = ajs.ImportFileList (fileList);
+        // convert file list
+        let result = ajs.ConvertFileList (fileList);
         
+        // check if the conversion succeeded
+        if (!result.IsSuccess () || result.FileCount () == 0) {
+            resultDiv.innerHTML = result.GetErrorCode ();
+            return;
+        }
+
+        // get the result file, and convert to string
+        let resultFile = result.GetFile (0);
+        let jsonContent = new TextDecoder ().decode (resultFile.GetContent ());
+
         // parse the result json
-        let resultJson = JSON.parse (result);
+        let resultJson = JSON.parse (jsonContent);
+        
+        resultDiv.innerHTML = JSON.stringify (resultJson, null, 4);
     });
 });
 ```
@@ -68,13 +80,13 @@ You should require the `assimpjs` module in your script. In node.js you can use 
 
 ```js
 let fs = require ('fs');
-const assimpjs = require ('assimpjs')();
+const assimpjs = require ('../dist/assimpjs.js')();
 
 assimpjs.then ((ajs) => {
     // create new file list object
     let fileList = new ajs.FileList ();
     
-    // add model files (make sure that the main file is the first)
+    // add model files
     fileList.AddFile (
         'cube_with_materials.obj',
         fs.readFileSync ('testfiles/cube_with_materials.obj')
@@ -84,11 +96,21 @@ assimpjs.then ((ajs) => {
         fs.readFileSync ('testfiles/cube_with_materials.mtl')
     );
     
-    // import model
-    let result = ajs.ImportFileList (fileList);
-    
+    // convert file list
+    let result = ajs.ConvertFileList (fileList);
+
+    // check if the conversion succeeded
+    if (!result.IsSuccess () || result.FileCount () == 0) {
+        console.log (result.GetErrorCode ());
+        return;
+    }
+
+    // get the result file, and convert to string
+    let resultFile = result.GetFile (0);
+    let jsonContent = new TextDecoder ().decode (resultFile.GetContent ());
+
     // parse the result json
-    let resultJson = JSON.parse (result);
+    let resultJson = JSON.parse (jsonContent);
 });
 ```
 
@@ -96,27 +118,37 @@ It's also possible to delay load the required files so they have to be loaded on
 
 ```js
 let fs = require ('fs');
-const assimpjs = require ('assimpjs')();
+const assimpjs = require ('../dist/assimpjs.js')();
 
 assimpjs.then ((ajs) => {
-    // import model
-    let result = ajs.ImportFile (
-        // file name
-        'cube_with_materials.obj',
-        // file content as arraybuffer
-        fs.readFileSync ('testfiles/cube_with_materials.obj'),
-        // check if file exists by name
-        function (fileName) {
-            return fs.existsSync ('testfiles/' + fileName);
-        },
-        // get file content as arraybuffer by name
-        function (fileName) {
-            return fs.readFileSync ('testfiles/' + fileName);
-        }
-    );
+    // convert model
+    let result = ajs.ConvertFile (
+		// file name
+		'cube_with_materials.obj',
+		// file content as arraybuffer
+		fs.readFileSync ('testfiles/cube_with_materials.obj'),
+		// check if file exists by name
+		function (fileName) {
+			return fs.existsSync ('testfiles/' + fileName);
+		},
+		// get file content as arraybuffer by name
+		function (fileName) {
+			return fs.readFileSync ('testfiles/' + fileName);
+		}
+	);
     
+    // check if the conversion succeeded
+    if (!result.IsSuccess () || result.FileCount () == 0) {
+        console.log (result.GetErrorCode ());
+        return;
+    }
+
+    // get the result file, and convert to string
+    let resultFile = result.GetFile (0);
+    let jsonContent = new TextDecoder ().decode (resultFile.GetContent ());
+
     // parse the result json
-    let resultJson = JSON.parse (result);
+    let resultJson = JSON.parse (jsonContent);
 });
 ```
 

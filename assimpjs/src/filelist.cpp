@@ -21,6 +21,21 @@ File::File (const std::string& path, const Buffer& content) :
 {
 }
 
+const std::string& File::GetPath () const
+{
+	return path;
+}
+
+#ifdef EMSCRIPTEN
+
+emscripten::val File::GetContentEmscripten () const
+{
+	emscripten::val Uint8Array = emscripten::val::global ("Uint8Array");
+	return Uint8Array.new_ (emscripten::typed_memory_view (content.size (), content.data ()));
+}
+
+#endif
+
 FileList::FileList () :
 	files ()
 {
@@ -36,21 +51,31 @@ size_t FileList::FileCount () const
 	return files.size ();
 }
 
-const File* FileList::GetFile (size_t index) const
+File& FileList::GetFile (size_t index)
 {
-	return &files[index];
+	return files[index];
 }
 
-const File* FileList::GetFile (const std::string& path) const
+File* FileList::GetFile (const std::string& path)
 {
 	std::string fileName = GetFileName (path);
-	for (const File& file : files) {
+	for (File& file : files) {
 		std::string currFileName = GetFileName (file.path);
 		if (currFileName == fileName) {
 			return &file;
 		}
 	}
 	return nullptr;
+}
+
+const File& FileList::GetFile (size_t index) const
+{
+	return const_cast<FileList*> (this)->GetFile (index);
+}
+
+const File* FileList::GetFile (const std::string& path) const
+{
+	return const_cast<FileList*> (this)->GetFile (path);
 }
 
 #ifdef EMSCRIPTEN

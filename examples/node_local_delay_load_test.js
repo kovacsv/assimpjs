@@ -2,8 +2,8 @@ let fs = require ('fs');
 const assimpjs = require ('../dist/assimpjs.js')();
 
 assimpjs.then ((ajs) => {
-    // import model
-    let result = ajs.ImportFile (
+    // convert model
+    let result = ajs.ConvertFile (
 		// file name
 		'cube_with_materials.obj',
 		// file content as arraybuffer
@@ -18,8 +18,18 @@ assimpjs.then ((ajs) => {
 		}
 	);
     
+    // check if the conversion succeeded
+    if (!result.IsSuccess () || result.FileCount () == 0) {
+        console.log (result.GetErrorCode ());
+        return;
+    }
+
+    // get the result file, and convert to string
+    let resultFile = result.GetFile (0);
+    let jsonContent = new TextDecoder ().decode (resultFile.GetContent ());
+
     // parse the result json
-    let resultJson = JSON.parse (result);
-    
+    let resultJson = JSON.parse (jsonContent);
+
     console.log (resultJson);
 });
