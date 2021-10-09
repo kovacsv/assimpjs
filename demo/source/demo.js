@@ -25,7 +25,7 @@ function LoadModel (ajs, files, onLoad)
 		for (let i = 0; i < arrayBuffers.length; i++) {
 			fileList.AddFile (files[i].name, new Uint8Array (arrayBuffers[i]));
 		}
-		let result = ajs.ConvertFileList (fileList);
+		let result = ajs.ConvertFileList (fileList, 'assjson');
 		if (!result.IsSuccess () || result.FileCount () == 0) {
 			onLoad ({
 				error: result.GetErrorCode ()

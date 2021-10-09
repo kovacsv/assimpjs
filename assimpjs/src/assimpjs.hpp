@@ -12,7 +12,7 @@
 #include <vector>
 #include <string>
 
-Result ConvertFile (const File& file, const FileLoader& loader);
-Result ConvertFileList (const FileList& fileList);
+Result ConvertFile (const File& file, const std::string& format, const FileLoader& loader);
+Result ConvertFileList (const FileList& fileList, const std::string& format);
 
 #endif

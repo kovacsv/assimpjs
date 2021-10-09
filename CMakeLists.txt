@@ -26,6 +26,7 @@ set (ASSIMP_BUILD_TESTS OFF CACHE BOOL "")
 set (ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "")
 set (ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "")
 set (ASSIMP_BUILD_ASSJSON_EXPORTER ON CACHE BOOL "")
+set (ASSIMP_BUILD_GLTF_EXPORTER ON CACHE BOOL "")
 
 # undefined behaviour because of alignment issues, crashes and memory leaks
 # https://github.com/assimp/assimp/pull/4044

@@ -27,8 +27,8 @@ assimpjs ().then (function (ajs) {
             fileList.AddFile (files[i], new Uint8Array (arrayBuffers[i]));
         }
         
-        // convert file list
-        let result = ajs.ConvertFileList (fileList);
+        // convert file list to assimp json
+        let result = ajs.ConvertFileList (fileList, 'assjson');
         
         // check if the conversion succeeded
         if (!result.IsSuccess () || result.FileCount () == 0) {

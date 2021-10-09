@@ -28,7 +28,7 @@ function LoadModel (files)
 		let filePath = GetTestFileLocation (files[i]);
 		fileList.AddFile (filePath, fs.readFileSync (filePath))
 	}
-	return ajs.ConvertFileList (fileList);
+	return ajs.ConvertFileList (fileList, 'assjson');
 }
 
 function IsError (files)
@@ -61,6 +61,7 @@ it ('Independent order', function () {
 it ('Delay load', function () {
 	let result = ajs.ConvertFile (
 		'OBJ/cube_usemtl.obj',
+		'assjson',
 		fs.readFileSync (GetTestFileLocation ('OBJ/cube_usemtl.obj')),
 		function (fileName) {
 			return fs.existsSync (GetTestFileLocation ('OBJ/' + fileName));
@@ -75,6 +76,28 @@ it ('Delay load', function () {
 	let jsonString = new TextDecoder ().decode (jsonFile.GetContent ());
 	let scene = JSON.parse (jsonString);
 	assert.deepStrictEqual (scene.materials[1].properties[2].value, [1, 1, 1]);
+});
+
+it ('glTF export', function () {
+	let files = ['OBJ/cube_usemtl.obj', 'OBJ/cube_usemtl.mtl'];
+	let fileList = new ajs.FileList ();
+	for (let i = 0; i < files.length; i++) {
+		let filePath = GetTestFileLocation (files[i]);
+		fileList.AddFile (filePath, fs.readFileSync (filePath))
+	}
+	{
+		let result = ajs.ConvertFileList (fileList, 'gltf2');
+		assert (result.IsSuccess ());
+		assert.equal (result.FileCount (), 2);
+		assert.equal (result.GetFile (0).GetPath (), 'result.gltf');
+		assert.equal (result.GetFile (1).GetPath (), 'result.bin');
+	}
+	{
+		let result = ajs.ConvertFileList (fileList, 'glb2');
+		assert (result.IsSuccess ());
+		assert.equal (result.FileCount (), 1);
+		assert.equal (result.GetFile (0).GetPath (), 'result.glb');
+	}
 });
 
 it ('3D', function () {

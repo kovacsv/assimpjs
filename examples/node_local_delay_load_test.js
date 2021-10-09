@@ -6,6 +6,8 @@ assimpjs.then ((ajs) => {
     let result = ajs.ConvertFile (
         // file name
         'cube_with_materials.obj',
+        // file format
+        'assjson',
         // file content as arraybuffer
         fs.readFileSync ('testfiles/cube_with_materials.obj'),
         // check if file exists by name

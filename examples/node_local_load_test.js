@@ -15,8 +15,8 @@ assimpjs.then ((ajs) => {
         fs.readFileSync ('testfiles/cube_with_materials.mtl')
     );
     
-    // convert file list
-    let result = ajs.ConvertFileList (fileList);
+    // convert file list to assimp json
+    let result = ajs.ConvertFileList (fileList, 'assjson');
 
     // check if the conversion succeeded
     if (!result.IsSuccess () || result.FileCount () == 0) {

@@ -1,6 +1,6 @@
 # assimpjs
 
-The [emscripten](https://emscripten.org) interface for the [assimp](https://github.com/assimp/assimp) library. It runs entirely in the browser, and allows you to import 40+ 3D file formats and access the result in JSON format. This is not a full port of assimp, but an easy to use interface to access it's functionality.
+The [emscripten](https://emscripten.org) interface for the [assimp](https://github.com/assimp/assimp) library. It runs entirely in the browser, and allows you to import 40+ 3D file formats and access the result in JSON or glTF format. This is not a full port of assimp, but an easy to use interface to access it's functionality.
 
 [Check out the live demo here!](http://kovacsv.github.io/assimpjs)
 
@@ -26,6 +26,8 @@ Given that browsers don't access the file system, you should provide all the fil
 You should provide two things for every file:
 - **name:** The name of the file. It's used if files are referring to each other.
 - **content:** The content of the file as an `Uint8Array` object.
+
+The supported target formats are: `assjson`, `gltf`, `gltf2`, `glb`, and `glb2`. The number of result files depends on the format.
 
 ### Use from the browser
 
@@ -53,8 +55,8 @@ assimpjs ().then (function (ajs) {
             fileList.AddFile (files[i], new Uint8Array (arrayBuffers[i]));
         }
         
-        // convert file list
-        let result = ajs.ConvertFileList (fileList);
+        // convert file list to assimp json
+        let result = ajs.ConvertFileList (fileList, 'assjson');
         
         // check if the conversion succeeded
         if (!result.IsSuccess () || result.FileCount () == 0) {
@@ -80,7 +82,7 @@ You should require the `assimpjs` module in your script. In node.js you can use 
 
 ```js
 let fs = require ('fs');
-const assimpjs = require ('../dist/assimpjs.js')();
+const assimpjs = require ('assimpjs')();
 
 assimpjs.then ((ajs) => {
     // create new file list object
@@ -96,8 +98,8 @@ assimpjs.then ((ajs) => {
         fs.readFileSync ('testfiles/cube_with_materials.mtl')
     );
     
-    // convert file list
-    let result = ajs.ConvertFileList (fileList);
+    // convert file list to assimp json
+    let result = ajs.ConvertFileList (fileList, 'assjson');
 
     // check if the conversion succeeded
     if (!result.IsSuccess () || result.FileCount () == 0) {
@@ -118,13 +120,15 @@ It's also possible to delay load the required files so they have to be loaded on
 
 ```js
 let fs = require ('fs');
-const assimpjs = require ('../dist/assimpjs.js')();
+const assimpjs = require ('assimpjs')();
 
 assimpjs.then ((ajs) => {
     // convert model
     let result = ajs.ConvertFile (
         // file name
         'cube_with_materials.obj',
+        // file format
+        'assjson',
         // file content as arraybuffer
         fs.readFileSync ('testfiles/cube_with_materials.obj'),
         // check if file exists by name

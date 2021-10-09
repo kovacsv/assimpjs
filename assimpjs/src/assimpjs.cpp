@@ -23,7 +23,20 @@ static const aiScene* ImportFileListByMainFile (Assimp::Importer& importer, cons
 	return nullptr;
 }
 
-static bool ExportScene (const aiScene* scene, Result& result)
+static std::string GetFileNameFromFormat (const std::string& format)
+{
+	std::string fileName = "result";
+	if (format == "assjson") {
+		fileName += ".json";
+	} else if (format == "gltf" || format == "gltf2") {
+		fileName += ".gltf";
+	} else if (format == "glb" || format == "glb2") {
+		fileName += ".glb";
+	}
+	return fileName;
+}
+
+static bool ExportScene (const aiScene* scene, const std::string& format, Result& result)
 {
 	if (scene == nullptr) {
 		result.errorCode = ErrorCode::ImportError;
@@ -36,7 +49,8 @@ static bool ExportScene (const aiScene* scene, Result& result)
 
 	Assimp::ExportProperties exportProperties;
 	exportProperties.SetPropertyBool ("JSON_SKIP_WHITESPACES", true);
-	aiReturn exportResult = exporter.Export (scene, "assjson", "result.json", 0u, &exportProperties);
+	std::string fileName = GetFileNameFromFormat (format);
+	aiReturn exportResult = exporter.Export (scene, format.c_str (), fileName.c_str (), 0u, &exportProperties);
 	if (exportResult != aiReturn_SUCCESS) {
 		result.errorCode = ErrorCode::ExportError;
 		return false;
@@ -46,18 +60,18 @@ static bool ExportScene (const aiScene* scene, Result& result)
 	return true;
 }
 
-Result ConvertFile (const File& file, const FileLoader& loader)
+Result ConvertFile (const File& file, const std::string& format, const FileLoader& loader)
 {
 	Assimp::Importer importer;
 	importer.SetIOHandler (new DelayLoadedIOSystemReadAdapter (file, loader));
 	const aiScene* scene = ImportFileListByMainFile (importer, file);
 
 	Result result;
-	ExportScene (scene, result);
+	ExportScene (scene, format, result);
 	return result;
 }
 
-Result ConvertFileList (const FileList& fileList)
+Result ConvertFileList (const FileList& fileList, const std::string& format)
 {
 	if (fileList.FileCount () == 0) {
 		return Result (ErrorCode::NoFilesFound);
@@ -76,7 +90,7 @@ Result ConvertFileList (const FileList& fileList)
 	}
 
 	Result result;
-	ExportScene (scene, result);
+	ExportScene (scene, format, result);
 	return result;
 }
 
@@ -84,6 +98,7 @@ Result ConvertFileList (const FileList& fileList)
 
 Result ConvertFileEmscripten (
 	const std::string& name,
+	const std::string& format,
 	const emscripten::val& content,
 	const emscripten::val& existsFunc,
 	const emscripten::val& loadFunc)
@@ -125,7 +140,7 @@ Result ConvertFileEmscripten (
 	Buffer buffer = emscripten::vecFromJSArray<std::uint8_t> (content);
 	File file (name, buffer);
 	FileLoaderEmscripten loader (existsFunc, loadFunc);
-	return ConvertFile (file, loader);
+	return ConvertFile (file, format, loader);
 }
 
 EMSCRIPTEN_BINDINGS (assimpjs)
@@ -149,8 +164,8 @@ EMSCRIPTEN_BINDINGS (assimpjs)
 		.function ("GetFile", &Result::GetFile)
 	;
 
-	emscripten::function<Result, const std::string&, const emscripten::val&, const emscripten::val&, const emscripten::val&> ("ConvertFile", &ConvertFileEmscripten);
-	emscripten::function<Result, const FileList&> ("ConvertFileList", &ConvertFileList);
+	emscripten::function<Result, const std::string&, const std::string&, const emscripten::val&, const emscripten::val&, const emscripten::val&> ("ConvertFile", &ConvertFileEmscripten);
+	emscripten::function<Result, const FileList&, const std::string&> ("ConvertFileList", &ConvertFileList);
 }
 
 #endif

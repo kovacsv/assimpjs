@@ -23,6 +23,18 @@ static size_t ReadFromBuffer (const Buffer* buffer, size_t& position, void* pvBu
 	return readableElemCount;
 }
 
+static size_t WriteToBuffer (Buffer* buffer, size_t& position, const void* pvBuffer, size_t pSize, size_t pCount)
+{
+	size_t memSize = pSize * pCount;
+	size_t newBufferSize = std::max (buffer->size (), position + memSize);
+	if (newBufferSize > buffer->size ()) {
+		buffer->resize (newBufferSize);
+	}
+	memcpy (buffer->data () + position, pvBuffer, memSize);
+	position += memSize;
+	return pCount;
+}
+
 static aiReturn SeekInBuffer (const Buffer* buffer, size_t& position, size_t pOffset, aiOrigin pOrigin)
 {
 	switch (pOrigin) {
@@ -110,14 +122,7 @@ size_t BufferIOStreamWriteAdapter::Read (void* pvBuffer, size_t pSize, size_t pC
 
 size_t BufferIOStreamWriteAdapter::Write (const void* pvBuffer, size_t pSize, size_t pCount)
 {
-	size_t memSize = pSize * pCount;
-	size_t newBufferSize = std::max (buffer->size (), position + memSize);
-	if (newBufferSize > buffer->size ()) {
-		buffer->resize (newBufferSize);
-	}
-	memcpy (buffer->data () + position, pvBuffer, memSize);
-	position += memSize;
-	return memSize;
+	return WriteToBuffer (buffer, position, pvBuffer, pSize, pCount);
 }
 
 aiReturn BufferIOStreamWriteAdapter::Seek (size_t pOffset, aiOrigin pOrigin)
