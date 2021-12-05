@@ -169,7 +169,7 @@ Install [CMake](https://cmake.org) (3.6 minimum version is needed). Make sure th
 Run the Emscripten setup script.
 
 ```
-tools\build_setup_emscripten_win.bat
+tools\setup_emscripten_win.bat
 ```
 
 ### 3. Compile the WASM library
