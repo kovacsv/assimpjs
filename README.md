@@ -1,11 +1,17 @@
-# assimpjs
-
-The [emscripten](https://emscripten.org) interface for the [assimp](https://github.com/assimp/assimp) library. It runs entirely in the browser, and allows you to import 40+ 3D file formats and access the result in JSON or glTF format. This is not a full port of assimp, but an easy to use interface to access it's functionality.
+<div align="center">
+    
+<img src="docs/images/assimpjs_logo_small.png?raw=true"> <br>
 
 [Check out the live demo here!](http://kovacsv.github.io/assimpjs)
 
 [![Native Build](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml)
 [![WASM Build](https://github.com/kovacsv/assimpjs/actions/workflows/wasm_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/wasm_build.yml)
+    
+</div>
+
+# assimpjs
+
+The [emscripten](https://emscripten.org) interface for the [assimp](https://github.com/assimp/assimp) library. It runs entirely in the browser, and allows you to import 40+ 3D file formats and access the result in JSON or glTF format. This is not a full port of assimp, but an easy to use interface to access it's functionality.
 
 ## How to install?
 
@@ -16,6 +22,7 @@ npm install assimpjs
 ```
 
 ## How to use?
+![assimpjs_logo_small](https://user-images.githubusercontent.com/2034315/147907875-028bc0c6-3fdc-4cd0-8e33-9a3c581d479b.png)
 
 The library runs in the browser and as a node.js module as well.
 
