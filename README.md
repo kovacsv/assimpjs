@@ -22,7 +22,6 @@ npm install assimpjs
 ```
 
 ## How to use?
-![assimpjs_logo_small](https://user-images.githubusercontent.com/2034315/147907875-028bc0c6-3fdc-4cd0-8e33-9a3c581d479b.png)
 
 The library runs in the browser and as a node.js module as well.
 
