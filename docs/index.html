@@ -6,12 +6,14 @@
     <meta name="viewport" content="width=device-width, user-scalable=no">
 
     <title>AssimpJS Demo</title>
-    <script type="text/javascript" src="dist/assimpjs.js"></script>
-	
-	<link rel="stylesheet" type="text/css" href="json-formatter/json-formatter.css">
-	<script type="text/javascript" src="json-formatter/json-formatter.umd.js"></script>
     
+	<script type="text/javascript" src="dist/assimpjs.js"></script>
+	<script type="text/javascript" src="libs/three.min.js"></script>
+	<script type="text/javascript" src="libs/OrbitControls.js"></script>
+	<script type="text/javascript" src="libs/GLTFLoader.js"></script>
+	
 	<link rel="stylesheet" type="text/css" href="source/demo.css">
+	<script type="text/javascript" src="source/viewer.js"></script>
 	<script type="text/javascript" src="source/demo.js"></script>
 </head>
 
@@ -21,7 +23,8 @@
 		<div id="info">
 		This site is a demonstration of <a href="https://github.com/kovacsv/assimpjs">assimpjs</a>, the emscripten interface for the <a href="https://github.com/assimp/assimp">assimp</a> library. You can try it out just by simply dragging and dropping a 3D model in this browser window. The result is the json representation of the model provided by assimp.
 		</div>
-		<div id="result"></div>
+		<div class="result" id="result_model"></div>
+		<div class="result" id="result_error"></div>
 	</div>
 </body>
 
