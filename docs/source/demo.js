@@ -14,7 +14,7 @@ function GetFileBuffer (file)
 	});		
 }
 
-function LoadModel (ajs, files, onLoad)
+function LoadModel (ajs, files, onSuccess, onError)
 {
 	let downloadFiles = [];
 	for (let i = 0; i < files.length; i++) {
@@ -25,28 +25,41 @@ function LoadModel (ajs, files, onLoad)
 		for (let i = 0; i < arrayBuffers.length; i++) {
 			fileList.AddFile (files[i].name, new Uint8Array (arrayBuffers[i]));
 		}
-		let result = ajs.ConvertFileList (fileList, 'assjson');
-		if (!result.IsSuccess () || result.FileCount () == 0) {
-			onLoad ({
-				error: result.GetErrorCode ()
-			});
+		let result = ajs.ConvertFileList (fileList, 'glb2');
+		if (!result.IsSuccess () || result.FileCount () != 1) {
+			onError (result.GetErrorCode ());
 		} else {
 			let resultFile = result.GetFile (0);
-			let jsonContent = new TextDecoder ().decode (resultFile.GetContent ());
-			let resultJson = JSON.parse (jsonContent);
-			onLoad (resultJson);
+			let resultFileContent = resultFile.GetContent ();
+			onSuccess (resultFileContent);
 		}
 	}).catch (() => {
-		onLoad ({
-			error: 'failed_to_load_file'
-		});
+		onError ('failed_to_load_file');
 	});
 }
 
-window.onload = function () {
+function ResizeViewer (viewer, resultDiv)
+{
+	let width = resultDiv.clientWidth - 20;
+	let height = window.innerHeight - resultDiv.offsetTop - 40;
+	viewer.Resize (width, height);
+}
+
+window.onload = function ()
+{
 	let dragDropDiv = document.getElementById ('dragdrop');
-	let resultDiv = document.getElementById ('result');
-	resultDiv.style.display = 'none';
+	let resultModelDiv = document.getElementById ('result_model');
+	let resultErrorDiv = document.getElementById ('result_error');
+	resultModelDiv.style.display = 'none';
+	resultErrorDiv.style.display = 'none';
+
+	let viewer = new Viewer ();
+	viewer.Init (resultModelDiv);
+
+    window.addEventListener ('resize', () => {
+        ResizeViewer (viewer, resultModelDiv);
+    });
+
 	let texts = {
 		loadingAssimpJS : 'LOADING ASSIMPJS...',
 		loadingModel : 'LOADING MODEL...',
@@ -69,17 +82,24 @@ window.onload = function () {
 			let files = ev.dataTransfer.files;
 			if (files.length > 0) {
 				dragDropDiv.innerHTML = texts.loadingModel;
-				resultDiv.style.display = 'none';
-				resultDiv.innerHTML = '';
+				resultModelDiv.style.display = 'none';
+				resultErrorDiv.style.display = 'none';
 				setTimeout (() => {
-					LoadModel (ajs, files, (result) => {
-						dragDropDiv.innerHTML = texts.dragDrop;
-						let formatter = new JSONFormatter (result, 2, {
-							'theme' : 'dark'
-						});
-						resultDiv.style.display = 'block';
-						resultDiv.appendChild (formatter.render ());
-					});
+					LoadModel (ajs, files,
+						(resultBuffer) => {
+							dragDropDiv.innerHTML = texts.dragDrop;
+							viewer.LoadGlbBuffer (resultBuffer, () => {
+								resultModelDiv.style.display = 'block';
+								ResizeViewer (viewer, resultModelDiv);
+								viewer.Render ();
+							});
+						},
+						(errorCode) => {
+							dragDropDiv.innerHTML = texts.dragDrop;
+							resultErrorDiv.style.display = 'block';
+							resultErrorDiv.innerHTML = '<div>Import failed with error code: ' + errorCode + '.</div>';
+						}
+					);
 				}, 10);
 			}
 		}, false);
