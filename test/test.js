@@ -75,7 +75,7 @@ it ('Delay load', function () {
 	let jsonFile = result.GetFile (0);
 	let jsonString = new TextDecoder ().decode (jsonFile.GetContent ());
 	let scene = JSON.parse (jsonString);
-	assert.deepStrictEqual (scene.materials[1].properties[2].value, [1, 1, 1]);
+	assert.deepStrictEqual (scene.materials[1].properties[4].value, [1, 1, 1]);
 });
 
 it ('glTF export', function () {
