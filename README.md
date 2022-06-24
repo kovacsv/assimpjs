@@ -4,6 +4,7 @@
 
 [Check out the live demo here!](http://kovacsv.github.io/assimpjs)
 
+[![npm version](https://badge.fury.io/js/assimpjs.svg)](https://badge.fury.io/js/assimpjs)
 [![Native Build](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/native_build.yml)
 [![WASM Build](https://github.com/kovacsv/assimpjs/actions/workflows/wasm_build.yml/badge.svg)](https://github.com/kovacsv/assimpjs/actions/workflows/wasm_build.yml)
     
