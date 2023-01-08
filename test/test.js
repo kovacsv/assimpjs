@@ -264,13 +264,21 @@ it ('MDC', function () {
 	assert (IsSuccess (['MDC/spider.mdc']));
 });
 
-// it ('MDL', function () {
-// 	// TODO: timeout
-// 	assert (IsError (['MDL/MDL (HL1)/man.mdl']));
-// 	assert (IsSuccess (['MDL/MDL3 (3DGS A4)/minigun.MDL']));
-// 	assert (IsSuccess (['MDL/MDL5 (3DGS A5)/minigun_mdl5.mdl']));
-// 	assert (IsSuccess (['MDL/MDL7 (3DGS A7)/Sphere_DiffPinkBlueSpec_Alpha90.mdl']));
-// });
+it ('MDL (HL1)', function () {
+	assert (IsSuccess (['MDL/MDL (HL1)/chrome_sphere.mdl']));
+});
+
+it ('MDL3', function () {
+	assert (IsSuccess (['MDL/MDL3 (3DGS A4)/minigun.MDL']));
+});
+
+it ('MDL5', function () {
+	assert (IsSuccess (['MDL/MDL5 (3DGS A5)/minigun_mdl5.mdl']));
+});
+
+it ('MDL7', function () {
+	assert (IsSuccess (['MDL/MDL7 (3DGS A7)/Sphere_DiffPinkBlueSpec_Alpha90.mdl']));
+});
 
 it ('MS3D', function () {
 	assert (IsSuccess (['MS3D/twospheres.ms3d']));

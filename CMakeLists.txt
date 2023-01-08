@@ -9,16 +9,6 @@ add_definitions (-DUNICODE -D_UNICODE)
 
 project (AssimpJS)
 
-function (SetCompilerOptions module)
-	target_compile_options (${module} PUBLIC "$<$<CONFIG:Debug>:-DDEBUG>")
-	if (WIN32)
-		set (AdditionalWarnings /w44061 /w44062 /w44265 /w44266 /w44355 /w44596 /w44800)
-		target_compile_options (${module} PUBLIC /W3 ${AdditionalWarnings})
-	else ()
-		target_compile_options (${module} PUBLIC -std=c++11)
-	endif ()
-endfunction ()
-
 # Assimp
 
 set (BUILD_SHARED_LIBS OFF CACHE BOOL "")
@@ -52,7 +42,7 @@ set (ASSIMP_BUILD_IFC_IMPORTER OFF CACHE BOOL "")
 add_subdirectory (assimp)
 
 if (${EMSCRIPTEN})
-	target_compile_options (assimp PUBLIC -fexceptions)
+	target_compile_options (assimp PUBLIC -fexceptions -Wno-unused-but-set-variable)
 endif ()
 
 # AssimpJS
@@ -72,6 +62,7 @@ if (${EMSCRIPTEN})
 
 	target_link_options (AssimpJS PUBLIC -sMODULARIZE=1)
 	target_link_options (AssimpJS PUBLIC -sEXPORT_NAME='assimpjs')
+	target_link_options (AssimpJS PUBLIC -sSTACK_SIZE=10MB)
 	target_link_options (AssimpJS PUBLIC -sALLOW_MEMORY_GROWTH=1 --no-heap-copy)
 	target_link_options (AssimpJS PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)
 	
@@ -83,7 +74,6 @@ else ()
 	add_library (AssimpJS ${AssimpJSSourceFiles})
 endif ()
 
-SetCompilerOptions (AssimpJS)
 target_link_libraries (AssimpJS assimp)
 set_target_properties(AssimpJS PROPERTIES OUTPUT_NAME assimpjs)
 set_target_properties (AssimpJS PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
@@ -100,8 +90,7 @@ else ()
 	)
 	source_group ("Sources" FILES ${AssimpJSExampleSourceFiles})
 	add_executable (AssimpJSExample ${AssimpJSExampleSourceFiles})
-	SetCompilerOptions (AssimpJSExample)
-	target_include_directories (AssimpJSExample PUBLIC ${AssimpJSSourcesFolder} ${TinyCSGEmscriptenSourcesFolder})
+	target_include_directories (AssimpJSExample PUBLIC ${AssimpJSSourcesFolder})
 	target_link_libraries (AssimpJSExample AssimpJS)
 	set_target_properties (AssimpJSExample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 endif ()
