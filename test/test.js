@@ -237,8 +237,7 @@ it ('LWO', function () {
 	assert (IsSuccess (['LWO/LWO2/transparency.lwo']));
 	assert (IsSuccess (['LWO/LWO2/uvtest.lwo']));
 	assert (IsSuccess (['LWO/LXOB_Modo/sphereWithVertMap.lxo']));
-
-	assert (IsError (['LWO/LWOB/sphere_with_mat_gloss_10pc.lwo']));
+	assert (IsSuccess (['LWO/LWOB/sphere_with_mat_gloss_10pc.lwo']));
 });
 
 it ('LWS', function () {
