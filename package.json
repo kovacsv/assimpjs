@@ -1,6 +1,6 @@
 {
 	"name": "assimpjs",
-	"version": "0.0.10",
+	"version": "0.0.11",
 	"description": "Javascript interface for the assimp library.",
 	"license": "MIT",
 	"main": "./dist/assimpjs.js",
