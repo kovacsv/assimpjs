@@ -4,6 +4,7 @@
 	"description": "Javascript interface for the assimp library.",
 	"license": "MIT",
 	"main": "./dist/assimpjs.js",
+	"types": "./dist/types.d.ts",
 	"repository": "github:kovacsv/assimpjs",
 	"keywords": [
 		"assimp",
