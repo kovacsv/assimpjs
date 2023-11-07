@@ -68,7 +68,9 @@ if (${EMSCRIPTEN})
 	
 	# to check for memory errors
 	# target_link_options (AssimpJS PUBLIC -sASSERTIONS=1 -sSAFE_HEAP=1 -sWARN_UNALIGNED=1)
-	
+
+	target_link_options (AssimpJS PUBLIC --embind-emit-tsd=assimpjs.d.ts)
+
 	target_link_options (AssimpJS PUBLIC --bind)
 else ()
 	add_library (AssimpJS ${AssimpJSSourceFiles})
