@@ -57,14 +57,14 @@ source_group ("Sources" FILES ${AssimpJSSourceFiles})
 
 if (${EMSCRIPTEN})
 	add_executable (AssimpJS ${AssimpJSSourceFiles})
-	target_compile_options (AssimpJS PUBLIC "$<$<CONFIG:Debug>:-gsource-map>")
-	target_compile_options (AssimpJS PUBLIC -fexceptions)
+	# target_compile_options (AssimpJS PUBLIC "$<$<CONFIG:Debug>:-gsource-map>")
+	# target_compile_options (AssimpJS PUBLIC -fexceptions)
 
-	target_link_options (AssimpJS PUBLIC -sMODULARIZE=1)
-	target_link_options (AssimpJS PUBLIC -sEXPORT_NAME='assimpjs')
-	target_link_options (AssimpJS PUBLIC -sSTACK_SIZE=10MB)
-	target_link_options (AssimpJS PUBLIC -sALLOW_MEMORY_GROWTH=1 --no-heap-copy)
-	target_link_options (AssimpJS PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)
+	# target_link_options (AssimpJS PUBLIC -sMODULARIZE=1)
+	# target_link_options (AssimpJS PUBLIC -sEXPORT_NAME='assimpjs')
+	# target_link_options (AssimpJS PUBLIC -sSTACK_SIZE=10MB)
+	# target_link_options (AssimpJS PUBLIC -sALLOW_MEMORY_GROWTH=1 --no-heap-copy)
+	# target_link_options (AssimpJS PUBLIC -sNO_DISABLE_EXCEPTION_CATCHING)
 	
 	# to check for memory errors
 	# target_link_options (AssimpJS PUBLIC -sASSERTIONS=1 -sSAFE_HEAP=1 -sWARN_UNALIGNED=1)
