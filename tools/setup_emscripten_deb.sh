@@ -2,13 +2,12 @@
 if [ ! -d "emsdk" ]; then
   # clone if path is missing
   eval git clone --recursive https://github.com/emscripten-core/emsdk.git
-  wait
   # enter emsdk path
   cd "emsdk"
-  # install the latest version
-  eval ./emsdk install latest
-  # activate the latest version
-  eval ./emsdk activate latest
+  # install the version 3.1.56
+  eval ./emsdk install 3.1.56
+  # activate the version 3.1.56
+  eval ./emsdk activate 3.1.56
   # activate the path for the terminal session
   eval source ./emsdk_env.sh
 else
@@ -18,6 +17,3 @@ else
   # activate the path for the terminal session
   eval source ./emsdk_env.sh
 fi
-wait
-
-
