@@ -161,21 +161,21 @@ it ('COB', function () {
 });
 
 it ('COLLADA', function () {
-	assert (IsSuccess (['COLLADA/duck.dae']));
-	assert (IsSuccess (['COLLADA/duck.zae']));
-	assert (IsSuccess (['COLLADA/COLLADA.dae']));
-	assert (IsSuccess (['COLLADA/COLLADA_triangulate.dae']));
-	assert (IsSuccess (['COLLADA/ConcavePolygon.dae']));
-	assert (IsSuccess (['COLLADA/cube_tristrips.dae']));
-	assert (IsSuccess (['COLLADA/cube_emptyTags.dae']));
-	assert (IsSuccess (['COLLADA/cube_triangulate.dae']));
-	assert (IsSuccess (['COLLADA/earthCylindrical.DAE']));
-	assert (IsSuccess (['COLLADA/human.zae']));
-	assert (IsSuccess (['COLLADA/lights.dae']));
-	assert (IsSuccess (['COLLADA/sphere.dae']));
-	assert (IsSuccess (['COLLADA/sphere_triangulate.dae']));
-	assert (IsSuccess (['COLLADA/teapot_instancenodes.DAE']));
-	assert (IsSuccess (['COLLADA/teapots.DAE']));
+	assert (IsSuccess (['Collada/duck.dae']));
+	assert (IsSuccess (['Collada/duck.zae']));
+	assert (IsSuccess (['Collada/COLLADA.dae']));
+	assert (IsSuccess (['Collada/COLLADA_triangulate.dae']));
+	assert (IsSuccess (['Collada/ConcavePolygon.dae']));
+	assert (IsSuccess (['Collada/cube_tristrips.dae']));
+	assert (IsSuccess (['Collada/cube_emptyTags.dae']));
+	assert (IsSuccess (['Collada/cube_triangulate.dae']));
+	assert (IsSuccess (['Collada/earthCylindrical.DAE']));
+	assert (IsSuccess (['Collada/human.zae']));
+	assert (IsSuccess (['Collada/lights.dae']));
+	assert (IsSuccess (['Collada/sphere.dae']));
+	assert (IsSuccess (['Collada/sphere_triangulate.dae']));
+	assert (IsSuccess (['Collada/teapot_instancenodes.DAE']));
+	assert (IsSuccess (['Collada/teapots.DAE']));
 });
 
 it ('CSM', function () {

@@ -1,0 +1,7 @@
+--- Commands for windows systems ---
+
+# First command --- setup emscripten
+./tools/setup_emscripten_win.bat
+
+# Second command --- build the project
+./tools/build_wasm_win.bat
